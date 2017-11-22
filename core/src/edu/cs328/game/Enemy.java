@@ -9,14 +9,20 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import java.lang.Math;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Enemy extends Unit{
 	private int awareness;
 	public Enemy(){
-		speed = .1f;
-		texture = new Texture(Gdx.files.internal("devil.png"));
+		//wallCollide = false;
+		speed = 2f;
+		Texture texture = new Texture(Gdx.files.internal("devil.png"));
+		sprite = new Sprite(texture);
 		movement = new Vector2();
-		awareness = 0;
+		awareness = 100;
+		setDimensions();
 	}
 
 	public void setAwareness(int awareness){
@@ -26,19 +32,27 @@ public class Enemy extends Unit{
 	public void update(float x, float y, TiledMapTileLayer layer){
 		int dist = (int)Math.sqrt((double)(Math.pow((x - this.position.x),2) + Math.pow((y - position.y),2)));
 		if(dist <= awareness){
-			movement.x = x - position.x;
-			movement.y = y - position.y;
-		}
-		else{
-			movement.x = (float)(Math.random() * 10f);
-			movement.y = (float)(Math.random() * 10f);
-			if(Math.random() < .5){
-				movement.x = movement.x * -1;
+			int xDif = (int)(x - position.x);
+			int yDif = (int)(y - position.y);
+
+			if(Math.abs(xDif) > Math.abs(yDif)){
+				if(atWall){
+					movement.y = speed * Integer.signum(yDif);
+				}
+				else{
+					movement.x = speed * Integer.signum(xDif);
+					movement.y = 0;
+				}
 			}
-			if(Math.random() < .5){
-				movement.y = movement.y * -1;
+			else{
+				if(atWall){
+					movement.x = speed * Integer.signum(xDif);
+				}
+				else{
+					movement.y = speed * Integer.signum(yDif);
+					movement.x = 0;
+				}
 			}
-			System.out.print(movement.x);
 		}
 	}
 }

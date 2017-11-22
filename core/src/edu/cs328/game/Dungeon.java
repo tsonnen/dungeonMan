@@ -12,54 +12,53 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import java.lang.Math;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 
 public class Dungeon {
 	public TiledMap map;
 	private MapLayers layers;
-	private TiledMapTileLayer layer;
 	public Vector2 spawn = new Vector2();
-	private Cell cell;
 	private float changeToLive = .45f;
 	private int birthLimit = 4;
 	private int deathLimit = 3;
+
 	public Dungeon(int width, int height, int tileWidth, int tileHeight){
-		Texture texture = new Texture(Gdx.files.internal("ground.png"));
 		map = new TiledMap();
 		layers = map.getLayers();
-		layer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
-		cell = new Cell();
-
-		cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
-
-		makeWorld(width, height);
-
-		for(int i = 0; i < 3; i++){
-			doSimulation(width, height);
-		}
-
-		layers.add(layer);
-		getSpawn(width, height);
+		
+		makeWorld(width, height, tileWidth, tileHeight);		
 	}
 
-	private void makeWorld(int width, int height){
+	private void makeWorld(int width, int height, int tileWidth, int tileHeight){
+		Texture wallTexture = new Texture(Gdx.files.internal("ground.png"));
+		TiledMapTileLayer walls = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
 		for(int x = 0; x < width; x++){
-			layer.setCell(x, 0, cell);
-			layer.setCell(x, height - 1, cell);
+			walls.setCell(x, 0, cell);
+			walls.setCell(x, height - 1, cell);
 			for(int y = 0; y < height - 1; y++){
-				layer.setCell(0, y, cell);
-				layer.setCell(width, y, cell);
+				walls.setCell(0, y, cell);
+				walls.setCell(width, y, cell);
 				if(Math.random() < changeToLive){
-					layer.setCell(x, y, cell);
+					walls.setCell(x, y, cell);
 				}
 			}
 		}
+		for(int i = 0; i < 4; i++){
+			walls = doSimulation(width, height, walls, cell);
+		}
+		walls.setName("walls");
+		layers.add(walls);
+		placeTreasure(width, height, walls);
+		getSpawn(width, height, walls);
 	}
 
-	public void doSimulation(int width, int height){
+	public TiledMapTileLayer doSimulation(int width, int height, TiledMapTileLayer layer, Cell cell){
 		TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
-		for(int x = 1; x<width - 1; x++){
-        	for(int y = 1; y < height - 1; y++){
+		for(int x = 0; x<width; x++){
+        	for(int y = 0; y < height; y++){
             	int nbs = countAliveNeighbours(x, y, width, height, layer);
             	//The new value is based on our simulation rules
             	//First, if a cell is alive but has too few neighbours, kill it.
@@ -76,7 +75,7 @@ public class Dungeon {
             	}
         	}
     	}
-        layer = newLayer;
+        return newLayer;
 	}
 
 	public int countAliveNeighbours(int x, int y, int width, int height, TiledMapTileLayer countLayer){
@@ -103,7 +102,44 @@ public class Dungeon {
     	return count;
 	}
 
-	private void getSpawn(int width, int height){
+	private void placeTreasure(int width, int height, TiledMapTileLayer wallLayer){
+		Texture treasureTexture = new Texture(Gdx.files.internal("treasure.png"));
+		TiledMapTileLayer treasure = new TiledMapTileLayer(width, height, 16, 16);
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(treasureTexture)));
+
+		int treasureHiddenLimit = 5;
+    	for (int x=0; x < width; x++){
+        	for (int y=0; y < height; y++){
+        		Cell neighbour = wallLayer.getCell(x,y);
+            	if(neighbour == null){
+                	int nbs = countAliveNeighbours(x, y, width, height, wallLayer);
+                	if(nbs >= treasureHiddenLimit){
+                    	treasure.setCell(x, y, cell);
+                	}
+            	}
+        	}
+    	}
+    	treasure.setName("treasure");
+    	layers.add(treasure);
+	}
+
+	public boolean hitTreasure(int x, int y, Rectangle hit){
+		TiledMapTileLayer layer = (TiledMapTileLayer)layers.get("treasure");
+		for(int i = -1; i < 2; i++){
+			for(int j = -1; j < 3; j++){
+				Rectangle tile = new Rectangle(x + i, y + j,1,1);
+				Cell cell = layer.getCell(x + i, y + j);
+				if(tile.overlaps(hit) && cell != null){
+					layer.setCell(x + i, y + j,null);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private void getSpawn(int width, int height, TiledMapTileLayer layer){
 		int x = width/2;
 		int y = height/2;
 		Cell spawnLoc = layer.getCell(x, y);
