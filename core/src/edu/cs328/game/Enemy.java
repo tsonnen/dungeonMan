@@ -16,12 +16,24 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 public class Enemy extends Unit{
 	private int awareness;
 	public Enemy(){
+		wallCollide = false;
+		speed = 2f;
+		Texture texture = new Texture(Gdx.files.internal("devil.png"));
+		sprite = new Sprite(texture);
+		movement = new Vector2();
+		awareness = 10;
+		setDimensions();
+	}
+
+	public Enemy(int x, int y){
 		//wallCollide = false;
 		speed = 2f;
 		Texture texture = new Texture(Gdx.files.internal("devil.png"));
 		sprite = new Sprite(texture);
 		movement = new Vector2();
 		awareness = 100;
+		position = new Vector2();
+		position.set(x,y);
 		setDimensions();
 	}
 

@@ -45,21 +45,19 @@ public class DungeonScreen implements Screen{
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
 		player = new Player();
 		player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
-		Enemy enemy = new Enemy();
-		enemy.position  = new Vector2(player.position.x + 1, player.position.y);
-		Enemy enemy2 = new Enemy();
-		enemy2.position  = new Vector2(player.position.x, player.position.y + 1);
-		Enemy enemy3 = new Enemy();
-		enemy3.position  = new Vector2(player.position.x -1, player.position.y);
-		Enemy enemy4 = new Enemy();
-		enemy4.position  = new Vector2(player.position.x, player.position.y - 1);
-		enemies.add(enemy);
-		enemies.add(enemy2);
-		enemies.add(enemy3);
-		enemies.add(enemy4);
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 10, 10);
         camera.update();
+        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("enemies");
+
+        for(int x = 0; x < layer.getWidth(); x++){
+        	for(int y = 0; y < layer.getHeight(); y++){
+        		Cell cell = layer.getCell(x, y);
+        		if(cell != null){
+        			enemies.add(new Enemy(x,y));
+        		}
+        	}
+        }
 	}
 	
 

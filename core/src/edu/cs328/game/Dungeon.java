@@ -51,7 +51,8 @@ public class Dungeon {
 		}
 		walls.setName("walls");
 		layers.add(walls);
-		placeTreasure(width, height, walls);
+		TiledMapTileLayer treasureLayer = placeTreasure(width, height, walls);
+		placeEnemy(width, height, walls, treasureLayer);
 		getSpawn(width, height, walls);
 	}
 
@@ -78,6 +79,32 @@ public class Dungeon {
         return newLayer;
 	}
 
+	private void placeEnemy(int width, int height, TiledMapTileLayer wallLayer, TiledMapTileLayer treasureLayer){
+		Texture texture = new Texture(Gdx.files.internal("treasure.png"));
+		TiledMapTileLayer enemies = new TiledMapTileLayer(width, height, 16, 16);
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+
+		int treasureHiddenLimit = 5;
+    	for (int x=0; x < width; x++){
+        	for (int y=0; y < height; y++){
+        		Cell neighbour = wallLayer.getCell(x,y);
+            	if(neighbour == null){
+            		neighbour = treasureLayer.getCell(x,y);
+            		if(neighbour == null){
+                		int nbs = countAliveNeighbours(x, y, width, height, wallLayer) + countAliveNeighbours(x, y, width, height, treasureLayer);
+                		if(nbs >= treasureHiddenLimit){
+                    		enemies.setCell(x, y, cell);
+                		}
+                	}
+            	}
+        	}
+    	}
+    	enemies.setVisible(false);
+    	enemies.setName("enemies");
+    	layers.add(enemies);
+	}
+
 	public int countAliveNeighbours(int x, int y, int width, int height, TiledMapTileLayer countLayer){
     	int count = 0;
     	for(int i=-1; i<2; i++){
@@ -102,7 +129,7 @@ public class Dungeon {
     	return count;
 	}
 
-	private void placeTreasure(int width, int height, TiledMapTileLayer wallLayer){
+	private TiledMapTileLayer placeTreasure(int width, int height, TiledMapTileLayer wallLayer){
 		Texture treasureTexture = new Texture(Gdx.files.internal("treasure.png"));
 		TiledMapTileLayer treasure = new TiledMapTileLayer(width, height, 16, 16);
 		Cell cell = new Cell();
@@ -122,6 +149,7 @@ public class Dungeon {
     	}
     	treasure.setName("treasure");
     	layers.add(treasure);
+    	return treasure;
 	}
 
 	public boolean hitTreasure(int x, int y, Rectangle hit){
