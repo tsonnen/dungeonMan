@@ -64,7 +64,7 @@ public class Player extends Unit implements InputProcessor{
 		width = height = 1f;
 	}
 
-	public void update(TiledMapTileLayer layer, float delta){
+	public void update(float delta){
 		stateTime += delta;
 		if(state == Unit.State.ATTACK && stateTime >= .25f){
 			state = Unit.State.WALKING;

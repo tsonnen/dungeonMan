@@ -57,6 +57,13 @@ public abstract class Unit{
 		bounds = new Rectangle(position.x, position.y, width, height);
 	}
 
+	public void render(Batch batch, float delta){
+		position.x += movement.x * speed * delta;
+		position.y += movement.y * speed * delta;
+		batch.draw(new TextureRegion(sprite.getTexture(), sprite.getRegionX(), sprite.getRegionY(), sprite.getRegionWidth(), sprite.getRegionHeight()), position.x, position.y, width, height);
+		bounds = new Rectangle(position.x, position.y, width, height);
+	}
+
 	/* Get the collisions with the walls.
 	 * Using a rectpool is more effective than
 	 * using the cells. (I don't know why)

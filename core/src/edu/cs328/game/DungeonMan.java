@@ -30,14 +30,13 @@ public class DungeonMan extends Game {
 	public ShapeRenderer shapeRenderer;
     public SpriteBatch spriteBatch;
     
-    @Override
     public void create () {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         this.setScreen(new MainMenuScreen(this));
     }
 
-    public void render(){
+    public void render(float delta){
         super.render();
     }
     

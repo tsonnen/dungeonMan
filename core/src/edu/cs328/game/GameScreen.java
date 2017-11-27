@@ -25,85 +25,61 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Screen;
 
-public class GameScreen  extends ApplicationAdapter implements Screen{
+public class GameScreen implements Screen{
 
-	private TiledMap map;
+ 	final DungeonMan game;
+ 	private TiledMap map;
  	private OrthogonalTiledMapRenderer tiledMapRenderer;
  	private OrthographicCamera camera;
- 	private Dungeon dungeon;
  	private Player player;
- 	private Array<Enemy> enemies = new Array<Enemy>();
- 	private Vector2 position;
- 	private MiniMap miniMap;
- 	final DungeonMan game;
+
 
  	public GameScreen(final DungeonMan game) {
-		this.game = game;
-		dungeon = new Dungeon(500, 100, 16, 16);
-		map = dungeon.map;
-		miniMap = new MiniMap(map);
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
-		player = new Player();
-		player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
-		Enemy enemy = new Enemy();
-		enemy.position  = new Vector2(player.position.x + 1, player.position.y);
-		Enemy enemy2 = new Enemy();
-		enemy2.position  = new Vector2(player.position.x, player.position.y + 1);
-		Enemy enemy3 = new Enemy();
-		enemy3.position  = new Vector2(player.position.x -1, player.position.y);
-		Enemy enemy4 = new Enemy();
-		enemy4.position  = new Vector2(player.position.x, player.position.y - 1);
-		enemies.add(enemy);
-		enemies.add(enemy2);
-		enemies.add(enemy3);
-		enemies.add(enemy4);
-		camera = new OrthographicCamera();
+ 		this.game = game;
+ 		map = new TiledMap();
+ 		MapLayers layers = map.getLayers();
+ 		TiledMapTileLayer layer = new TiledMapTileLayer(10,10,16,16);
+ 		Texture groundTexture = new Texture(Gdx.files.internal("ground.png"));
+ 		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(groundTexture)));
+
+		for(int x = 0; x < 20; x++){
+			for(int y = 0; y < 10; y++){
+				layer.setCell(x,y,cell);
+			}
+		}
+
+		layers.add(layer);
+
+ 		tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
+
+ 		player = new Player();
+ 		player.position = new Vector2(5, 5);
+
+ 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 10, 10);
         camera.update();
-	}
-	
-	@Override
-	public void create () {
-		
-        //screenViewport = new ScreenViewport(camera);
 	}
 
 	@Override
 	public void render (float delta) {
-		//float delta = Gdx.graphics.getDeltaTime();
-		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
-		//screenViewport.apply();
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.position.x = player.position.x;
-      	camera.position.y = player.position.y;
-      	camera.update();
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-      	//dungeon.doSimulation(100, 100);
-        tiledMapRenderer.setView(camera);
+		tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
-        Batch batch = tiledMapRenderer.getBatch();
-        batch.begin();
-        player.update(layer, delta);
-        player.render(batch, delta, map);
-        Rectangle hitBox = player.getAttackBox();
-        if(player.state == Unit.State.ATTACK){
-        	dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
-    	}
-        for(Enemy enemy: enemies){
-        	enemy.update(player.position.x, player.position.y, layer);
-        	enemy.render(batch, delta, map);
-        	if(player.state == Unit.State.ATTACK){
-        		if(enemy.bounds.overlaps(hitBox))
-        			enemies.removeValue(enemy, true);
-        	}
-    	}
-        batch.end();
-        
-        //miniMap.update(position.x, position.y);
-        //miniMap.render();
+        if(player.position.x < 0){
+        	camera.position.x = -5;
+        	camera.update();
+        }
 
+		Batch batch = tiledMapRenderer.getBatch();
+        batch.begin();
+        player.update(delta);
+        player.render(batch, delta);
+        batch.end();
+		//game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16)));
 	}
 	
 	@Override
@@ -119,5 +95,21 @@ public class GameScreen  extends ApplicationAdapter implements Screen{
 
 	@Override
 	public void show(){
+	}
+
+	public void resize(int width, int height) {
+		// change the stage's viewport when teh screen size is changed
+	}
+ 
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+ 
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 }

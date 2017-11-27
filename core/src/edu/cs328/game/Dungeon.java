@@ -31,7 +31,7 @@ public class Dungeon {
 	}
 
 	private void makeWorld(int width, int height, int tileWidth, int tileHeight){
-		Texture wallTexture = new Texture(Gdx.files.internal("ground.png"));
+		Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
 		TiledMapTileLayer walls = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
 		Cell cell = new Cell();
 		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));

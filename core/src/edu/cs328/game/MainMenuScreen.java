@@ -28,22 +28,19 @@ public class MainMenuScreen implements Screen {
 		// Create a table that fills the screen. Everything else will go inside this table.
 		Table table = new Table();
 		table.setFillParent(true);
-        	table.setDebug(true);
-        	stage.addActor(table);
-        
-        	// temporary until we have asset manager in
-        	Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        
-        	//create buttons
-        	TextButton newGame = new TextButton("New Game", skin);
-        	TextButton preferences = new TextButton("Preferences", skin);
-        	TextButton exit = new TextButton("Exit", skin);
-        
-       		//add buttons to table
-        	table.add(newGame).fillX().uniformX();
+        table.setDebug(false);
+        stage.addActor(table);        
+        // temporary until we have asset manager in
+        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));        
+        //create buttons
+        TextButton newGame 	= new TextButton("New Game", skin);
+        TextButton help 	= new TextButton("Help", skin);
+        TextButton exit 	= new TextButton("Exit", skin);        
+       	//add buttons to table
+        table.add(newGame).fillX().uniformX();
+        table.row().pad(10, 0, 10, 0);
+		table.add(help).fillX().uniformX();
 		table.row().pad(10, 0, 10, 0);
-		table.add(preferences).fillX().uniformX();
-		table.row();
 		table.add(exit).fillX().uniformX();
 		
 		// create button listeners
@@ -51,6 +48,12 @@ public class MainMenuScreen implements Screen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Gdx.app.exit();				
+			}
+		});
+		help.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				game.setScreen(new HelpScreen(game));		
 			}
 		});
 		newGame.addListener(new ChangeListener() {
