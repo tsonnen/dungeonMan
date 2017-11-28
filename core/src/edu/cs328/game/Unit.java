@@ -48,7 +48,7 @@ public abstract class Unit{
 	public void render(Batch batch, float delta, TiledMap map){
 		if(wallCollide){
 			getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);
-			getCollision((TiledMapTileLayer)map.getLayers().get("treasure"), delta);
+			//getCollision((TiledMapTileLayer)map.getLayers().get("treasure"), delta);
 		}
 
 		position.x += movement.x * speed * delta;

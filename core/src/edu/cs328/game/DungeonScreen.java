@@ -35,7 +35,10 @@ public class DungeonScreen implements Screen{
  	private Array<Enemy> enemies = new Array<Enemy>();
  	private Vector2 position;
  	private MiniMap miniMap;
+ 	private float stateTime = 0;
  	final DungeonMan game;
+ 	private int roomWidth = 16;
+	private int roomHeight = 12;
 
  	public DungeonScreen(final DungeonMan game, Dungeon dungeon) {
 		this.game = game;
@@ -46,7 +49,7 @@ public class DungeonScreen implements Screen{
 		player = new Player();
 		player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 10, 10);
+		camera.setToOrtho(false, roomWidth, roomHeight);
         camera.update();
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("enemies");
 
@@ -68,21 +71,37 @@ public class DungeonScreen implements Screen{
 		//screenViewport.apply();
 		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.position.x = player.position.x;
-      	camera.position.y = player.position.y;
+        int x = (int)player.position.x / (roomWidth-1);
+        int y = (int)player.position.y / (roomHeight -1);
+        //camera.position.x =  x * 9 + 5;
+      	//camera.position.y = y * 9 + 5;
+      	Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
+
+      	camera.position.lerp(destPos, 4 * delta);
       	camera.update();
 
       	//dungeon.doSimulation(100, 100);
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
+        if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
+        	stateTime += delta;
+        	delta = 0;
+        }
+        else{
+        	stateTime = 0;
+        	camera.position.x  = destPos.x;
+        	camera.position.y = destPos.y;
+        }
         Batch batch = tiledMapRenderer.getBatch();
         batch.begin();
         player.update(delta);
         player.render(batch, delta, map);
         Rectangle hitBox = player.getAttackBox();
+        
+
         if(player.state == Unit.State.ATTACK){
-        	dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
+        	//dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
     	}
         for(Enemy enemy: enemies){
         	enemy.update(player.position.x, player.position.y, layer);

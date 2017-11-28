@@ -22,6 +22,8 @@ public class Dungeon {
 	private float changeToLive = .45f;
 	private int birthLimit = 4;
 	private int deathLimit = 3;
+	private int roomWidth = 16;
+	private int roomHeight = 12;
 
 	public Dungeon(int width, int height, int tileWidth, int tileHeight){
 		map = new TiledMap();
@@ -31,29 +33,82 @@ public class Dungeon {
 	}
 
 	private void makeWorld(int width, int height, int tileWidth, int tileHeight){
-		Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
 		TiledMapTileLayer walls = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
-		Cell cell = new Cell();
-		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
-		for(int x = 0; x < width; x++){
-			walls.setCell(x, 0, cell);
-			walls.setCell(x, height - 1, cell);
-			for(int y = 0; y < height - 1; y++){
-				walls.setCell(0, y, cell);
-				walls.setCell(width, y, cell);
-				if(Math.random() < changeToLive){
-					walls.setCell(x, y, cell);
-				}
+		Array<Room> rooms = new Array<Room>();
+		int x = 0;
+		int y = 0;
+		walls = makeRoom(0,0,walls);
+		for(int i = 0; i < 50; i++){
+			double seed = Math.random();
+			if(seed < .25 && x > 0){
+				walls = makeRoom(x-(roomWidth-1),y, walls);
+				walls.setCell(x, y + roomHeight/2, null);
+				walls.setCell(x, y + roomHeight/2 - 1, null);
+				x -= (roomWidth-1);
+			}else if(seed < .5 && x < width){
+				walls = makeRoom(x + (roomWidth-1),y, walls);
+				walls.setCell(x + (roomWidth-1), y + roomHeight/2, null);
+				walls.setCell(x + (roomWidth-1), y + roomHeight/2 + 1, null);
+				x += (roomWidth-1);
+			}else if(seed < .75 && y > 0){
+				walls = makeRoom(x,y-(roomHeight-1), walls);
+				walls.setCell(x + roomWidth/2, y, null);
+				walls.setCell(x + roomWidth/2 - 1, y, null);
+				y -= (roomHeight-1);
+			}else if(y < height){
+				walls = makeRoom(x,y + (roomHeight-1), walls);
+				walls.setCell(x + roomWidth/2, y + (roomHeight-1), null);
+				walls.setCell(x + roomWidth/2 - 1, y + (roomHeight-1), null);
+				y += (roomHeight-1);
 			}
 		}
-		for(int i = 0; i < 4; i++){
-			walls = doSimulation(width, height, walls, cell);
-		}
 		walls.setName("walls");
+		TiledMapTileLayer enemies = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+		Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
+		enemies.setVisible(false);
+		enemies.setName("enemies");
+		enemies.setCell(x + 4, y + 4, cell);
+		layers.add(enemies);
 		layers.add(walls);
-		TiledMapTileLayer treasureLayer = placeTreasure(width, height, walls);
-		placeEnemy(width, height, walls, treasureLayer);
-		getSpawn(width, height, walls);
+		//TiledMapTileLayer treasureLayer = placeTreasure(width, height, walls);
+		//placeEnemy(width, height, walls, treasureLayer);
+		//getSpawn(width, height, walls);
+		spawn.set(5,5);
+	}
+
+	private TiledMapTileLayer makeRoom(int startX, int startY, TiledMapTileLayer layer){
+		Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
+		Cell current= new Cell();
+		boolean left, right, up, down;
+		left = layer.getCell(startX, startY + 1) == null;
+		right = layer.getCell(startX + (roomWidth-1), startY + 1) == null;
+		up = layer.getCell(startX + 1, startY + (roomHeight-1)) == null;
+		down = layer.getCell(startX + 1, startY) == null;
+		if(up){
+			for(int x = 0; x < roomWidth; x++){
+				layer.setCell(x + startX, startY + (roomHeight-1), cell);
+			}
+		}
+		if(down){
+			for(int x = 0; x < roomWidth; x++){
+				layer.setCell(x + startX, startY, cell);
+			}
+		}
+		if(left){
+			for(int y = 0; y < roomHeight; y++){
+				layer.setCell(startX, startY + y, cell);
+			}
+		}
+		if(right){
+			for(int y = 0; y < roomHeight; y++){
+				layer.setCell(startX + (roomWidth-1), startY + y, cell);
+			}
+		}
+		return layer;
 	}
 
 	public TiledMapTileLayer doSimulation(int width, int height, TiledMapTileLayer layer, Cell cell){
