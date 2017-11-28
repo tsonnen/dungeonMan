@@ -34,7 +34,6 @@ public class Dungeon {
 
 	private void makeWorld(int width, int height, int tileWidth, int tileHeight){
 		TiledMapTileLayer walls = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
-		Array<Room> rooms = new Array<Room>();
 		int x = 0;
 		int y = 0;
 		walls = makeRoom(0,0,walls);
@@ -83,10 +82,11 @@ public class Dungeon {
 		cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
 		Cell current= new Cell();
 		boolean left, right, up, down;
-		left = layer.getCell(startX, startY + 1) == null;
-		right = layer.getCell(startX + (roomWidth-1), startY + 1) == null;
-		up = layer.getCell(startX + 1, startY + (roomHeight-1)) == null;
-		down = layer.getCell(startX + 1, startY) == null;
+		// See if there is already a wall on each side
+		left 	= layer.getCell(startX, startY + 1) == null;
+		right 	= layer.getCell(startX + (roomWidth-1), startY + 1) == null;
+		up 		= layer.getCell(startX + 1, startY + (roomHeight-1)) == null;
+		down 	= layer.getCell(startX + 1, startY) == null;
 		if(up){
 			for(int x = 0; x < roomWidth; x++){
 				layer.setCell(x + startX, startY + (roomHeight-1), cell);

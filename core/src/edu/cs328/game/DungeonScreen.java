@@ -39,9 +39,11 @@ public class DungeonScreen implements Screen{
  	final DungeonMan game;
  	private int roomWidth = 16;
 	private int roomHeight = 12;
+	private GameScreen gameScreen;
 
- 	public DungeonScreen(final DungeonMan game, Dungeon dungeon) {
+ 	public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
 		this.game = game;
+		this.gameScreen = gameScreen;
 		this.dungeon = dungeon;
 		map = dungeon.map;
 		miniMap = new MiniMap(map);

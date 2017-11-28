@@ -57,6 +57,7 @@ public abstract class Unit{
 		bounds = new Rectangle(position.x, position.y, width, height);
 	}
 
+	/* Place the Unit without regard to the a map */
 	public void render(Batch batch, float delta){
 		position.x += movement.x * speed * delta;
 		position.y += movement.y * speed * delta;
