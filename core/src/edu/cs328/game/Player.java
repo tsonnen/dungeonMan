@@ -53,10 +53,10 @@ public class Player extends Unit implements InputProcessor{
 		leftAttack = tmp[4][2];
 		downAttack = tmp[4][3];
 
-		upWalk = new Animation<TextureRegion>(.25f, new Array<TextureRegion>(upWalkFrames), PlayMode.LOOP);
-		downWalk = new Animation<TextureRegion>(.25f, new Array<TextureRegion>(downWalkFrames), PlayMode.LOOP);
-		leftWalk = new Animation<TextureRegion>(.25f, new Array<TextureRegion>(leftWalkFrames), PlayMode.LOOP);
-		rightWalk = new Animation<TextureRegion>(.25f, new Array<TextureRegion>(rightWalkFrames), PlayMode.LOOP);
+		upWalk = new Animation<TextureRegion>(.15f, new Array<TextureRegion>(upWalkFrames), PlayMode.LOOP);
+		downWalk = new Animation<TextureRegion>(.15f, new Array<TextureRegion>(downWalkFrames), PlayMode.LOOP);
+		leftWalk = new Animation<TextureRegion>(.15f, new Array<TextureRegion>(leftWalkFrames), PlayMode.LOOP);
+		rightWalk = new Animation<TextureRegion>(.15f, new Array<TextureRegion>(rightWalkFrames), PlayMode.LOOP);
 
 		sprite = new Sprite(upWalkFrames[0]);
 
