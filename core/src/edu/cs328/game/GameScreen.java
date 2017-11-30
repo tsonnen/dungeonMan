@@ -99,7 +99,6 @@ public class GameScreen implements Screen{
                     Cell cell = enemyLayer.getCell(i, j);
                     if(cell != null){
                         enemies.add(new Enemy(i,j));
-                        System.out.println(i + "," + j);
                     }
                 }
             }
@@ -211,7 +210,6 @@ public class GameScreen implements Screen{
                     int nbs = countAliveNeighbours(x, y, 50 * roomWidth, 50 * roomHeight, wallLayer);
                     if(nbs >= enemyHiddenLimit){
                         enemies.setCell(x, y, cell);
-                        System.out.println(x + "," + y);
                     }
                 }
             }

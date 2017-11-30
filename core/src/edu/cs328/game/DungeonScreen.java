@@ -27,71 +27,71 @@ import com.badlogic.gdx.Screen;
 
 public class DungeonScreen implements Screen{
 
-	private TiledMap map;
- 	private OrthogonalTiledMapRenderer tiledMapRenderer;
- 	private OrthographicCamera camera;
- 	private Dungeon dungeon;
- 	private Player player;
- 	private Array<Enemy> enemies = new Array<Enemy>();
- 	private Vector2 position;
- 	private MiniMap miniMap;
- 	private float stateTime = 0;
- 	final DungeonMan game;
- 	private int roomWidth = 16;
-	private int roomHeight = 12;
-	private GameScreen gameScreen;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
+    private OrthographicCamera camera;
+    private Dungeon dungeon;
+    private Player player;
+    private Array<Enemy> enemies = new Array<Enemy>();
+    private Vector2 position;
+    private MiniMap miniMap;
+    private float stateTime = 0;
+    final DungeonMan game;
+    private int roomWidth = 16;
+    private int roomHeight = 12;
+    private GameScreen gameScreen;
 
- 	public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
-		this.game = game;
-		this.gameScreen = gameScreen;
-		this.dungeon = dungeon;
-		map = dungeon.map;
-		miniMap = new MiniMap(map);
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
-		player = new Player();
-		player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, roomWidth, roomHeight);
+    public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
+        this.game = game;
+        this.gameScreen = gameScreen;
+        this.dungeon = dungeon;
+        map = dungeon.map;
+        miniMap = new MiniMap(map);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
+        player = new Player();
+        player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, roomWidth, roomHeight);
         camera.update();
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("enemies");
 
         for(int x = 0; x < layer.getWidth(); x++){
-        	for(int y = 0; y < layer.getHeight(); y++){
-        		Cell cell = layer.getCell(x, y);
-        		if(cell != null){
-        			enemies.add(new Enemy(x,y));
-        		}
-        	}
+            for(int y = 0; y < layer.getHeight(); y++){
+                Cell cell = layer.getCell(x, y);
+                if(cell != null){
+                    enemies.add(new Enemy(x,y));
+                }
+            }
         }
-	}
-	
+    }
+    
 
-	@Override
-	public void render (float delta) {
-		//float delta = Gdx.graphics.getDeltaTime();
-		TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
-		//screenViewport.apply();
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+    @Override
+    public void render (float delta) {
+        //float delta = Gdx.graphics.getDeltaTime();
+        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
+        //screenViewport.apply();
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         int x = (int)player.position.x / (roomWidth-1);
         int y = (int)player.position.y / (roomHeight -1);
         //camera.position.x =  x * 9 + 5;
-      	//camera.position.y = y * 9 + 5;
-      	Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
+        //camera.position.y = y * 9 + 5;
+        Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
 
-      	camera.position.lerp(destPos, 4 * delta);
-      	camera.update();
+        camera.position.lerp(destPos, 4 * delta);
+        camera.update();
 
-      	//dungeon.doSimulation(100, 100);
+        //dungeon.doSimulation(100, 100);
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
         if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
-        	stateTime += delta;
-        	delta = 0;
+            stateTime += delta;
+            delta = 0;
         }
         else{
-        	stateTime = 0;
+            stateTime = 0;
         }
 
          if(stateTime >= 1f){
@@ -117,51 +117,51 @@ public class DungeonScreen implements Screen{
         
 
         if(player.state == Unit.State.ATTACK){
-        	//dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
-    	}
+            //dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
+        }
         for(Enemy enemy: enemies){
-        	enemy.update(player.position.x, player.position.y, layer);
-        	enemy.render(batch, delta, map);
-        	if(player.state == Unit.State.ATTACK){
-        		if(enemy.bounds.overlaps(hitBox))
-        			enemies.removeValue(enemy, true);
-        	}
-    	}
+            enemy.update(player.position.x, player.position.y, layer);
+            enemy.render(batch, delta, map);
+            if(player.state == Unit.State.ATTACK){
+                if(enemy.bounds.overlaps(hitBox))
+                    enemies.removeValue(enemy, true);
+            }
+        }
         batch.end();
         
         //miniMap.update(position.x, position.y);
         //miniMap.render();
 
-	}
-	
-	@Override
-	public void dispose () {
-		
-	}
+    }
+    
+    @Override
+    public void dispose () {
+        
+    }
 
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void hide() {
+        // TODO Auto-generated method stub
+        
+    }
 
-	@Override
-	public void show(){
-	}
+    @Override
+    public void show(){
+    }
 
-	public void resize(int width, int height) {
-		// change the stage's viewport when teh screen size is changed
-	}
+    public void resize(int width, int height) {
+        // change the stage's viewport when teh screen size is changed
+    }
  
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+        
+    }
  
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
+        
+    }
 }

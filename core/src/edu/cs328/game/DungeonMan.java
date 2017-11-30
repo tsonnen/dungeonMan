@@ -27,7 +27,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class DungeonMan extends Game {
-	public ShapeRenderer shapeRenderer;
+    public ShapeRenderer shapeRenderer;
     public SpriteBatch spriteBatch;
     
     public void create () {

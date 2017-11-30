@@ -23,67 +23,67 @@ public class HelpScreen implements Screen, InputProcessor {
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
-	public HelpScreen(final DungeonMan game) {
-		this.game = game;
-	    helpTexture = new Texture(Gdx.files.internal("help.png"));
-	    batch = new SpriteBatch();
-	    camera = new OrthographicCamera();
-	    camera.setToOrtho(false, 640, 480);
+    public HelpScreen(final DungeonMan game) {
+        this.game = game;
+        helpTexture = new Texture(Gdx.files.internal("help.png"));
+        batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 640, 480);
         camera.update();
         Gdx.input.setInputProcessor(this);
-	}
+    }
 
-	@Override
-	public void show(){
-	
-	}
+    @Override
+    public void show(){
+    
+    }
  
-	@Override
-	public void render(float delta) {
-		// clear the screen ready for next set of images to be drawn
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		System.out.println(Gdx.graphics.getWidth());
-		System.out.println(Gdx.graphics.getHeight());
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		batch.draw(helpTexture, 0,0, 640, 480);
-		batch.end();
+    @Override
+    public void render(float delta) {
+        // clear the screen ready for next set of images to be drawn
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        System.out.println(Gdx.graphics.getWidth());
+        System.out.println(Gdx.graphics.getHeight());
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(helpTexture, 0,0, 640, 480);
+        batch.end();
 
-	}
+    }
  
-	@Override
-	public void resize(int width, int height) {
-	
-	}
+    @Override
+    public void resize(int width, int height) {
+    
+    }
  
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+        
+    }
  
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void resume() {
+        // TODO Auto-generated method stub
+        
+    }
  
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void hide() {
+        // TODO Auto-generated method stub
+        
+    }
  
-	@Override
-	public void dispose() {
-		// dispose of assets when not needed anymore
+    @Override
+    public void dispose() {
+        // dispose of assets when not needed anymore
 
-	}
+    }
 
-		@Override 
+        @Override 
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-    	game.setScreen(new MainMenuScreen(game));
+        game.setScreen(new MainMenuScreen(game));
         return true;
     }
 
