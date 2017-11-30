@@ -92,9 +92,23 @@ public class DungeonScreen implements Screen{
         }
         else{
         	stateTime = 0;
-        	camera.position.x  = destPos.x;
-        	camera.position.y = destPos.y;
         }
+
+         if(stateTime >= 1f){
+            camera.position.x  = destPos.x;
+            camera.position.y = destPos.y;
+            TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
+            enemies = new Array<Enemy>();
+            for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
+                for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
+                    Cell cell = enemyLayer.getCell(i, j);
+                    if(cell != null){
+                        enemies.add(new Enemy(i,j));
+                    }
+                }
+            }
+        }
+
         Batch batch = tiledMapRenderer.getBatch();
         batch.begin();
         player.update(delta);
