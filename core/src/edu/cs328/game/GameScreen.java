@@ -39,6 +39,7 @@ public class GameScreen implements Screen{
     private int deathLimit = 3;
     private MapLayers layers;
     private Array<Enemy> enemies = new Array<Enemy>();
+    private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
 
 
     public GameScreen(final DungeonMan game) {
@@ -65,10 +66,10 @@ public class GameScreen implements Screen{
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
 
         /* Target camera location */
-        int x = (int)player.position.x / (roomWidth-1);
-        int y = (int)player.position.y / (roomHeight -1);
+        int x = (int)player.position.x / (roomWidth - 2);
+        int y = (int)player.position.y / (roomHeight - 2);
 
-        Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
+        Vector3 destPos = new Vector3(x * (roomWidth - 2) + (roomWidth/2), y * (roomHeight - 2) + (roomHeight/2), 0);
 
         camera.position.lerp(destPos, 4 * delta);
         camera.update();
@@ -78,39 +79,59 @@ public class GameScreen implements Screen{
         tiledMapRenderer.render();
 
         if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
+
+            /* If we just started the screen transition,
+            * place enemies 
+            */
+            if(stateTime <= 0f){
+                TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
+                TiledMapTileLayer dungeonLayer = (TiledMapTileLayer)map.getLayers().get("entrance");
+                enemies = new Array<Enemy>();
+                dungeonEntrances.clear();
+                for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
+                    for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
+                        Cell enemyCell = enemyLayer.getCell(i, j);
+                        Cell entranceCell = dungeonLayer.getCell(i, j);
+                        if(enemyCell != null){
+                            enemies.add(new Enemy(i,j));
+                        }
+                        if(entranceCell != null){
+                            dungeonEntrances.add(new Rectangle(i,j,1,1));
+                        }
+                    }
+                }
+
+            }
             stateTime += delta;
             delta = 0;
             //game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
         }
         else{
             stateTime = 0;
-        }
-
-        /* If we just finished the screen transition,
-         * place enemies 
-         */
-        if(stateTime >= 1f){
             camera.position.x  = destPos.x;
             camera.position.y = destPos.y;
-            TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
-            enemies = new Array<Enemy>();
-            for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
-                for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
-                    Cell cell = enemyLayer.getCell(i, j);
-                    if(cell != null){
-                        enemies.add(new Enemy(i,j));
-                    }
-                }
-            }
         }
+
 
         Batch batch = tiledMapRenderer.getBatch();
         batch.begin();
         player.update(delta);
         player.render(batch, delta, map);
+        Rectangle hitBox = player.getAttackBox();
+        
         for(Enemy enemy: enemies){
             enemy.update(player.position.x, player.position.y, layer);
             enemy.render(batch, delta, map);
+            if(player.state == Unit.State.ATTACK){
+                if(enemy.bounds.overlaps(hitBox))
+                    enemies.removeValue(enemy, true);
+            }
+        }
+        
+        for(Rectangle entrance : dungeonEntrances){
+            if(entrance.overlaps(player.bounds)){
+                game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
+            }
         }
         batch.end();
     }
@@ -145,6 +166,7 @@ public class GameScreen implements Screen{
         layers.add(trees);
 
         placeEnemy(50 * roomWidth, 50 * roomHeight, trees);
+        placeEntrance(50 * roomWidth, 50 * roomHeight, trees);
     }
 
     /* Play the game of life */
@@ -217,6 +239,29 @@ public class GameScreen implements Screen{
         enemies.setVisible(false);
         enemies.setName("enemies");
         layers.add(enemies);
+    }
+
+
+    private void placeEntrance(int width, int height, TiledMapTileLayer wallLayer){
+        Texture texture = new Texture(Gdx.files.internal("entrance.png"));
+        TiledMapTileLayer entrance = new TiledMapTileLayer(width, height, 16, 16);
+        Cell cell = new Cell();
+        cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+
+        int entranceHiddenLimit = 6;
+        for (int x=0; x < width; x++){
+            for (int y=0; y < height; y++){
+                Cell neighbour = wallLayer.getCell(x,y);
+                if(neighbour == null){
+                    int nbs = countAliveNeighbours(x, y, 50 * roomWidth, 50 * roomHeight, wallLayer);
+                    if(nbs >= entranceHiddenLimit){
+                        entrance.setCell(x, y, cell);
+                    }
+                }
+            }
+        }
+        entrance.setName("entrance");
+        layers.add(entrance);
     }
     
     @Override

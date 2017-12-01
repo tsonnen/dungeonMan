@@ -133,13 +133,13 @@ public class Player extends Unit implements InputProcessor{
         if(state == State.ATTACK){
             switch(facing){
                 case UP:
-                    return new Rectangle(position.x + width/4f, position.y + width, width/2f, height/4f);
+                    return new Rectangle(position.x, position.y, width, height * 2f);
                 case LEFT:
-                    return new Rectangle(position.x - width, position.y + height/4f, width/4f, height/2f);
+                    return new Rectangle(position.x - width, position.y, width * 2f, height);
                 case DOWN:
-                    return new Rectangle(position.x + width/4f, position.y - width, width/2f, height/4f);
+                    return new Rectangle(position.x, position.y - width, width, height * 2f);
                 case RIGHT:
-                    return new Rectangle(position.x + width, position.y + height/4f, width/4f, height/2f);
+                    return new Rectangle(position.x, position.y, width * 2f, height);
                 default:
                     return new Rectangle(position.x, position.y, width/4f, height/4f);
             }
