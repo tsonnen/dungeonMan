@@ -86,7 +86,7 @@ public class GameScreen implements Screen{
             if(stateTime <= 0f){
                 TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
                 TiledMapTileLayer dungeonLayer = (TiledMapTileLayer)map.getLayers().get("entrance");
-                enemies = new Array<Enemy>();
+                enemies.clear();
                 dungeonEntrances.clear();
                 for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
                     for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
@@ -120,7 +120,7 @@ public class GameScreen implements Screen{
         Rectangle hitBox = player.getAttackBox();
         
         for(Enemy enemy: enemies){
-            enemy.update(player.position.x, player.position.y, layer);
+            enemy.update();
             enemy.render(batch, delta, map);
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(hitBox))
@@ -218,24 +218,49 @@ public class GameScreen implements Screen{
         return count;
     }
 
+    /* Generate enemies using the game of life */
     private void placeEnemy(int width, int height, TiledMapTileLayer wallLayer){
         Texture texture = new Texture(Gdx.files.internal("treasure.png"));
         TiledMapTileLayer enemies = new TiledMapTileLayer(width, height, 16, 16);
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
 
-        int enemyHiddenLimit = 4;
-        for (int x=0; x < width; x++){
-            for (int y=0; y < height; y++){
-                Cell neighbour = wallLayer.getCell(x,y);
-                if(neighbour == null){
-                    int nbs = countAliveNeighbours(x, y, 50 * roomWidth, 50 * roomHeight, wallLayer);
-                    if(nbs >= enemyHiddenLimit){
-                        enemies.setCell(x, y, cell);
-                    }
+
+        /* Make the background and place trees */
+        for(int x = 0; x < 50 * roomWidth; x++){
+            for(int y = 0; y < 50 * roomHeight; y++){
+                if(wallLayer.getCell(x,y) == null){
+                    if(Math.random() < .4)
+                        enemies.setCell(x,y,cell);
                 }
             }
         }
+
+        for(int i = 0; i < 3; i++){
+            TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
+            for(int x = 0; x<width; x++){
+                for(int y = 0; y < height; y++){
+                    if(wallLayer.getCell(x,y) == null){
+                        int nbs = countAliveNeighbours(x, y, width, height, enemies) +  countAliveNeighbours(x, y, width, height, wallLayer);
+                        //The new value is based on our simulation rules
+                        //First, if a cell is alive but has too few neighbours, kill it.
+                        Cell neighbour = enemies.getCell(x,y);
+                        if(neighbour != null){
+                            if(nbs > 4){
+                                newLayer.setCell(x, y, cell);
+                            }
+                        } //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
+                        else{
+                            if(nbs > 5){
+                                newLayer.setCell(x, y, cell);
+                            }
+                        }
+                    }
+                }
+            }
+            enemies = newLayer;
+        }
+
         enemies.setVisible(false);
         enemies.setName("enemies");
         layers.add(enemies);

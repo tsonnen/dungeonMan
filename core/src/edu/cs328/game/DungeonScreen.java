@@ -120,7 +120,7 @@ public class DungeonScreen implements Screen{
             //dungeon.hitTreasure((int)hitBox.x, (int)player.position.y, hitBox);
         }
         for(Enemy enemy: enemies){
-            enemy.update(player.position.x, player.position.y, layer);
+            enemy.update();
             enemy.render(batch, delta, map);
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(hitBox))
