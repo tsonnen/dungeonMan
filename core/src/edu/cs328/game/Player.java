@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class Player extends Unit implements InputProcessor{
     private Animation<TextureRegion> upWalk;
@@ -28,6 +29,7 @@ public class Player extends Unit implements InputProcessor{
     private TextureRegion downAttack;
     private Texture spriteSheet;
     private float stateTime = 0f;
+    public Projectile projectile;
     private int dirX, dirY  = 0;
 
     public Player(){
@@ -106,6 +108,26 @@ public class Player extends Unit implements InputProcessor{
                     break;
                 default:
                     break;
+            }
+        }
+    }
+
+    @Override
+    public void render(Batch batch, float delta, TiledMap map){
+        if(wallCollide){
+            getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);
+            //getCollision((TiledMapTileLayer)map.getLayers().get("treasure"), delta);
+        }
+
+        position.x += movement.x * speed * delta;
+        position.y += movement.y * speed * delta;
+        batch.draw(new TextureRegion(sprite.getTexture(), sprite.getRegionX(), sprite.getRegionY(), sprite.getRegionWidth(), sprite.getRegionHeight()), position.x, position.y, width, height);
+        bounds = new Rectangle(position.x, position.y, width, height);
+
+        if(projectile != null){
+            projectile.render(batch, delta, map);
+            if(projectile.atWall){
+                projectile = null;
             }
         }
     }
@@ -222,6 +244,10 @@ public class Player extends Unit implements InputProcessor{
                     default:
                         break;                  
                 }
+                break;
+            case Keys.K:
+                if(projectile == null)
+                    projectile = new Knife(position.x + width/2, position.y + height/2, facing);
                 break;
             default:
                 break;

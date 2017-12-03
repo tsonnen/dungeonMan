@@ -13,43 +13,16 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-public abstract class Unit{
-    public Sprite sprite;
-    public Vector2 position = new Vector2();
-    public int hp;
-    public Rectangle bounds;
-    public Vector2 movement = new Vector2();
-    public float speed;
-    public float width;
-    public float height;
-    public boolean wallCollide = true;
-    public boolean atWall = false;
+public abstract class Projectile extends Unit{
+    public int damage;
 
-    public enum State{
-        WALKING, ATTACK, HURT
-    }
-    public State state = State.WALKING;
-
-    public enum Facing{
-        UP, DOWN, LEFT, RIGHT
-    }
-
-    public Facing facing = Facing.UP;
-
-    public Unit(){
+    public Projectile(){
 
     }
 
-    public void setDimensions(){
-        width = sprite.getTexture().getWidth()/16f;
-        height = sprite.getTexture().getHeight()/16f;
-    }
-
+    @Override
     public void render(Batch batch, float delta, TiledMap map){
-        if(wallCollide){
-            getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);
-            //getCollision((TiledMapTileLayer)map.getLayers().get("treasure"), delta);
-        }
+        getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);
 
         position.x += movement.x * speed * delta;
         position.y += movement.y * speed * delta;
@@ -57,19 +30,7 @@ public abstract class Unit{
         bounds = new Rectangle(position.x, position.y, width, height);
     }
 
-    /* Place the Unit without regard to the a map */
-    public void render(Batch batch, float delta){
-        position.x += movement.x * speed * delta;
-        position.y += movement.y * speed * delta;
-        batch.draw(new TextureRegion(sprite.getTexture(), sprite.getRegionX(), sprite.getRegionY(), sprite.getRegionWidth(), sprite.getRegionHeight()), position.x, position.y, width, height);
-        bounds = new Rectangle(position.x, position.y, width, height);
-    }
-
-    /* Get the collisions with the walls.
-     * Using a rectpool is more effective than
-     * using the cells. (I don't know why)
-     */
-    
+    @Override
     public void getCollision(TiledMapTileLayer layer, float delta){
         Array<Rectangle> rectPool = new Array<Rectangle>();
         atWall = false;

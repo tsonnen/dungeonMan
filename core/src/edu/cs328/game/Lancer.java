@@ -54,8 +54,8 @@ public class Lancer extends Enemy{
 
         facing = Facing.UP;
         sprite = new Sprite(upWalkFrames[0]);
-        width = height = 1f;
         newDirection();
+        width = height = 1f;
     }
 
     @Override

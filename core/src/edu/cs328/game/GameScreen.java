@@ -117,10 +117,18 @@ public class GameScreen implements Screen{
         player.update(delta);
         player.render(batch, delta, map);
         Rectangle hitBox = player.getAttackBox();
+
+        Rectangle knifeBounds = new Rectangle();
+        if(player.projectile != null)
+            knifeBounds = player.projectile.bounds;
         
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
+            if(player.projectile != null && enemy.bounds.overlaps(knifeBounds)){
+                enemies.removeValue(enemy, true);
+                player.projectile = null;
+            }
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(hitBox))
                     enemies.removeValue(enemy, true);
