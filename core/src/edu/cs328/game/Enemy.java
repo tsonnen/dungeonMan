@@ -25,7 +25,7 @@ public class Enemy extends Unit{
         init();
     }
 
-    private void init(){
+    public void init(){
         speed = 2f;
         Texture texture = new Texture(Gdx.files.internal("devil.png"));
         sprite = new Sprite(texture);
@@ -41,7 +41,7 @@ public class Enemy extends Unit{
         }
     }
 
-    private void newDirection(){
+    public void newDirection(){
         double seed = Math.random();
         if(seed < .25){
             movement.set(speed, 0);

@@ -53,16 +53,6 @@ public class DungeonScreen implements Screen{
         camera = new OrthographicCamera();
         camera.setToOrtho(false, roomWidth, roomHeight);
         camera.update();
-        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("enemies");
-
-        for(int x = 0; x < layer.getWidth(); x++){
-            for(int y = 0; y < layer.getHeight(); y++){
-                Cell cell = layer.getCell(x, y);
-                if(cell != null){
-                    enemies.add(new Enemy(x,y));
-                }
-            }
-        }
     }
     
 
@@ -103,7 +93,7 @@ public class DungeonScreen implements Screen{
                 for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
                     Cell cell = enemyLayer.getCell(i, j);
                     if(cell != null){
-                        enemies.add(new Enemy(i,j));
+                        enemies.add(new Enemy());
                     }
                 }
             }

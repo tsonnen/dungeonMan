@@ -38,7 +38,7 @@ public class GameScreen implements Screen{
     private int birthLimit = 4;
     private int deathLimit = 3;
     private MapLayers layers;
-    private Array<Enemy> enemies = new Array<Enemy>();
+    private Array<Lancer> enemies = new Array<Lancer>();
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
 
 
@@ -66,15 +66,14 @@ public class GameScreen implements Screen{
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
 
         /* Target camera location */
-        int x = (int)player.position.x / (roomWidth - 2);
-        int y = (int)player.position.y / (roomHeight - 2);
+        int x = (int)player.position.x / (roomWidth - 1);
+        int y = (int)player.position.y / (roomHeight - 1);
 
-        Vector3 destPos = new Vector3(x * (roomWidth - 2) + (roomWidth/2), y * (roomHeight - 2) + (roomHeight/2), 0);
+        Vector3 destPos = new Vector3(x * (roomWidth - 1) + (roomWidth/2), y * (roomHeight - 1) + (roomHeight/2), 0);
 
         camera.position.lerp(destPos, 4 * delta);
         camera.update();
 
-        //dungeon.doSimulation(100, 100);
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
@@ -93,7 +92,7 @@ public class GameScreen implements Screen{
                         Cell enemyCell = enemyLayer.getCell(i, j);
                         Cell entranceCell = dungeonLayer.getCell(i, j);
                         if(enemyCell != null){
-                            enemies.add(new Enemy(i,j));
+                            enemies.add(new Lancer(i,j));
                         }
                         if(entranceCell != null){
                             dungeonEntrances.add(new Rectangle(i,j,1,1));
@@ -119,8 +118,8 @@ public class GameScreen implements Screen{
         player.render(batch, delta, map);
         Rectangle hitBox = player.getAttackBox();
         
-        for(Enemy enemy: enemies){
-            enemy.update();
+        for(Lancer enemy : enemies){
+            enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(hitBox))
