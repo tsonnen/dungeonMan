@@ -41,7 +41,6 @@ public class GameScreen implements Screen{
     private Array<Enemy> enemies = new Array<Enemy>();
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
 
-
     public GameScreen(final DungeonMan game) {
         this.game = game;
         map = new TiledMap();
@@ -116,23 +115,35 @@ public class GameScreen implements Screen{
         batch.begin();
         player.update(delta);
         player.render(batch, delta, map);
-        Rectangle hitBox = player.getAttackBox();
 
-        Rectangle knifeBounds = new Rectangle();
-        if(player.projectile != null)
-            knifeBounds = player.projectile.bounds;
-        
+        Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
+        for(int i = 0; i < player.maxHp; i++){
+            if(i < player.hp){
+                batch.draw(new TextureRegion(hearts, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f);
+            }
+            else{
+                batch.draw(new TextureRegion(hearts, 0, 8, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f); 
+            }
+        }
+
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
-            if(player.projectile != null && enemy.bounds.overlaps(knifeBounds)){
-                enemies.removeValue(enemy, true);
+            if(player.projectile != null && enemy.bounds.overlaps(player.projectile.bounds)){
+                enemy.takeHit(player.projectile.dmg);
                 player.projectile = null;
             }
             if(player.state == Unit.State.ATTACK){
-                if(enemy.bounds.overlaps(hitBox))
-                    enemies.removeValue(enemy, true);
+                if(enemy.bounds.overlaps(player.getAttackBox())){
+                    enemy.takeHit(player.attackDmg);
+                    player.stateTime = .15f;
+                }
             }
+            else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
+                player.takeHit(1);
+            }
+            if(enemy.hp <= 0)
+                enemies.removeValue(enemy, true);
         }
         
         for(Rectangle entrance : dungeonEntrances){

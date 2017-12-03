@@ -23,6 +23,7 @@ public class Knife extends Projectile{
     private float stateTime = 0f;
 
     public Knife(float x, float y, Facing facing){
+        dmg = 3;
         speed = 5f;
         this.facing = facing;
         position.set(x,y);

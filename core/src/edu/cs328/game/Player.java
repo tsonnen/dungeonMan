@@ -28,12 +28,14 @@ public class Player extends Unit implements InputProcessor{
     private TextureRegion rightAttack;
     private TextureRegion downAttack;
     private Texture spriteSheet;
-    private float stateTime = 0f;
     public Projectile projectile;
     private int dirX, dirY  = 0;
+    public int attackDmg = 3;
+    public int maxHp = 3;
 
     public Player(){
         speed = 2.5f;
+        hp = maxHp;
         spriteSheet = new Texture(Gdx.files.internal("notlink.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 16, 16);
         TextureRegion [] upWalkFrames = new TextureRegion[4];
@@ -126,7 +128,7 @@ public class Player extends Unit implements InputProcessor{
 
         if(projectile != null){
             projectile.render(batch, delta, map);
-            if(projectile.atWall){
+            if(projectile.atWall || projectile.dead){
                 projectile = null;
             }
         }

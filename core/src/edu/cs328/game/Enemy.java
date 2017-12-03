@@ -26,6 +26,7 @@ public class Enemy extends Unit{
     }
 
     public void init(){
+        hp = 10;
         speed = 2f;
         Texture texture = new Texture(Gdx.files.internal("devil.png"));
         sprite = new Sprite(texture);
@@ -36,6 +37,22 @@ public class Enemy extends Unit{
     }
 
     public void update(float delta, float x, float y, float width, float height){
+        stateTime += delta;
+        if((movement.x + movement.y == 0 || Math.random() < .01) && state != State.HURT){
+            newDirection();
+            stateTime = 0f;
+        }
+        else if((position.x > x + width || position.x < x || position.y > y + height  || position.y < y) && state != State.HURT){
+            movement.x *= -1;
+            movement.y *= -1;
+        }
+        else if(state == State.HURT){
+            movement.set(0,0);
+            if(stateTime >= .25f){
+                state = State.WALKING;
+                newDirection();
+            }
+        }
     }
 
     public void update(){

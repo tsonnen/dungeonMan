@@ -24,6 +24,7 @@ public abstract class Unit{
     public float height;
     public boolean wallCollide = true;
     public boolean atWall = false;
+    public float stateTime = 0f;
 
     public enum State{
         WALKING, ATTACK, HURT
@@ -96,5 +97,11 @@ public abstract class Unit{
                 atWall = true;
             }
         }
+    }
+
+    public void takeHit(int dmg){
+        hp -= dmg;
+        state = State.HURT;
+        stateTime = 0f;
     }
 }

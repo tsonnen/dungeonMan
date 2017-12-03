@@ -14,7 +14,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 public abstract class Projectile extends Unit{
-    public int damage;
+    public int dmg;
+    public float startX;
+    public float startY;
+    public boolean dead = false;
 
     public Projectile(){
 

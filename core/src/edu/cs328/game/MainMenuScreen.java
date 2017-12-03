@@ -59,7 +59,9 @@ public class MainMenuScreen implements Screen {
         newGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game));       
+               game.setScreen(new GameScreen(game));
+               /* For testing dungeons without having to find them */
+               //game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), new GameScreen(game)));       
             }
         });
         

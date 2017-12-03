@@ -21,7 +21,6 @@ public class Lancer extends Enemy{
     private Animation<TextureRegion> rightWalk;
     private Animation<TextureRegion> downWalk;
     private Texture spriteSheet;
-    private float stateTime = 0f;
 
     public Lancer(int x, int y){
         position = new Vector2();
@@ -30,6 +29,7 @@ public class Lancer extends Enemy{
     }
 
     public void init(){
+        hp = 6;
         speed = 2f;
         movement = new Vector2();
 
@@ -61,15 +61,23 @@ public class Lancer extends Enemy{
     @Override
     public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
-        if(movement.x + movement.y == 0 || Math.random() < .01){
+        if((movement.x + movement.y == 0 || Math.random() < .01) && state != State.HURT){
             newDirection();
             stateTime = 0f;
         }
-        else if(position.x > x + width || position.x < x || position.y > y + height  || position.y < y){
+        else if((position.x > x + width || position.x < x || position.y > y + height  || position.y < y) && state != State.HURT){
             movement.x *= -1;
             movement.y *= -1;
             getFacing();
         }
+        else if(state == State.HURT){
+            movement.set(0,0);
+            if(stateTime >= .25f){
+                state = State.WALKING;
+                newDirection();
+            }
+        }
+
 
         switch(facing){
             case UP:
