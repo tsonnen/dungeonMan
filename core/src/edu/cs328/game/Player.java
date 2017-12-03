@@ -31,7 +31,7 @@ public class Player extends Unit implements InputProcessor{
     private int dirX, dirY  = 0;
 
     public Player(){
-        speed = 3f;
+        speed = 2.5f;
         spriteSheet = new Texture(Gdx.files.internal("notlink.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 16, 16);
         TextureRegion [] upWalkFrames = new TextureRegion[4];
@@ -66,7 +66,7 @@ public class Player extends Unit implements InputProcessor{
 
     public void update(float delta){
         stateTime += delta;
-        if(state == Unit.State.ATTACK && stateTime >= .25f){
+        if(state == Unit.State.ATTACK && stateTime >= .15f){
             state = Unit.State.WALKING;
             switch(facing){
                 case UP:

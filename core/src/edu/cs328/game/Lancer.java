@@ -58,6 +58,7 @@ public class Lancer extends Enemy{
         newDirection();
     }
 
+    @Override
     public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
         if(movement.x + movement.y == 0 || Math.random() < .01){

@@ -35,6 +35,9 @@ public class Enemy extends Unit{
         newDirection();
     }
 
+    public void update(float delta, float x, float y, float width, float height){
+    }
+
     public void update(){
         if(movement.x + movement.y == 0 || Math.random() < .01){
             newDirection();

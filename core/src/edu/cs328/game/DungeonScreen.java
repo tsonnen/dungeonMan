@@ -93,7 +93,7 @@ public class DungeonScreen implements Screen{
                 for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
                     Cell cell = enemyLayer.getCell(i, j);
                     if(cell != null){
-                        enemies.add(new Enemy());
+                        enemies.add(new Enemy(i,j));
                     }
                 }
             }

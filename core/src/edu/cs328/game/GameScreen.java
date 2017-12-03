@@ -38,7 +38,7 @@ public class GameScreen implements Screen{
     private int birthLimit = 4;
     private int deathLimit = 3;
     private MapLayers layers;
-    private Array<Lancer> enemies = new Array<Lancer>();
+    private Array<Enemy> enemies = new Array<Enemy>();
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
 
 
@@ -118,7 +118,7 @@ public class GameScreen implements Screen{
         player.render(batch, delta, map);
         Rectangle hitBox = player.getAttackBox();
         
-        for(Lancer enemy : enemies){
+        for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
             if(player.state == Unit.State.ATTACK){
