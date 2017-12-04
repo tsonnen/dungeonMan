@@ -121,8 +121,6 @@ public class Dungeon {
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
 
-
-        /* Make the background and place trees */
         for(int x = 0; x < 50 * roomWidth; x++){
             for(int y = 0; y < 50 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){

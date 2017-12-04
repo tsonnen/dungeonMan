@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.graphics.Color;
 
 public class Player extends Unit implements InputProcessor{
     private Animation<TextureRegion> upWalk;
@@ -93,6 +94,10 @@ public class Player extends Unit implements InputProcessor{
         }
         else if(state == State.ATTACK)
             movement.x = movement.y = 0;
+        else if(state == Unit.State.HURT && stateTime >= 1f){
+            stateTime = 0f;
+            state = State.WALKING;
+        }
 
         if(movement.x + movement.y != 0 && state != State.ATTACK){
             switch(facing){
@@ -123,7 +128,12 @@ public class Player extends Unit implements InputProcessor{
 
         position.x += movement.x * speed * delta;
         position.y += movement.y * speed * delta;
+        Color oldColor = batch.getColor();
+         if(state == State.HURT){
+            batch.setColor((float)Math.random(), (float)Math.random(), (float)Math.random(), 1);
+        }
         batch.draw(new TextureRegion(sprite.getTexture(), sprite.getRegionX(), sprite.getRegionY(), sprite.getRegionWidth(), sprite.getRegionHeight()), position.x, position.y, width, height);
+        batch.setColor(oldColor);
         bounds = new Rectangle(position.x, position.y, width, height);
 
         if(projectile != null){

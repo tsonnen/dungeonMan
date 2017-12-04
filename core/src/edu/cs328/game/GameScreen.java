@@ -291,7 +291,7 @@ public class GameScreen implements Screen{
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
 
-        int entranceHiddenLimit = 6;
+        int entranceHiddenLimit = 5;
         for (int x=0; x < width; x++){
             for (int y=0; y < height; y++){
                 Cell neighbour = wallLayer.getCell(x,y);

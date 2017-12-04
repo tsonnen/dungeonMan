@@ -75,34 +75,40 @@ public class DungeonScreen implements Screen{
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
-        if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
+       if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
+
+            /* If we just started the screen transition,
+            * place enemies 
+            */
+            if(stateTime <= 0f){
+                TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
+                TiledMapTileLayer bossLayer = (TiledMapTileLayer)map.getLayers().get("boss");
+                enemies.clear();
+                for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
+                    for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
+                        Cell cell = enemyLayer.getCell(i, j);
+                        if(cell != null){
+                            enemies.add(new Enemy(i,j));
+                        }
+                        cell = bossLayer.getCell(i, j);
+                        if(cell != null){
+                            boss = new Lancer(i - 1, j - 1);
+                            boss.width = boss.height = 2;
+                            boss.hp = 30;
+                        }
+                    }
+                }
+
+            }
+
             stateTime += delta;
             delta = 0;
+            //game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
         }
         else{
             stateTime = 0;
-        }
-
-         if(stateTime >= 1f){
             camera.position.x  = destPos.x;
             camera.position.y = destPos.y;
-            TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
-            TiledMapTileLayer bossLayer = (TiledMapTileLayer)map.getLayers().get("boss");
-            enemies = new Array<Enemy>();
-            for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
-                for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
-                    Cell cell = enemyLayer.getCell(i, j);
-                    if(cell != null){
-                        enemies.add(new Enemy(i,j));
-                    }
-                    cell = bossLayer.getCell(i, j);
-                    if(cell != null){
-                        boss = new Lancer(i - 1, j - 1);
-                        boss.width = boss.height = 2;
-                        boss.hp = 30;
-                    }
-                }
-            }
         }
 
         Batch batch = tiledMapRenderer.getBatch();
