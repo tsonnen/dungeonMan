@@ -58,12 +58,26 @@ public class GameScreen implements Screen{
         while(cell != null){
             x++;
             y++;
+            cell = layer.getCell(x,y);
         }
 
         player.position = new Vector2(x, y);
+        Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
+
+        TiledMapTileLayer dungeonLayer = (TiledMapTileLayer)map.getLayers().get("entrance");
+        for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
+            for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
+                Cell entranceCell = dungeonLayer.getCell(i, j);
+                if(entranceCell != null){
+                    dungeonEntrances.add(new Rectangle(i,j,1,1));
+                }
+            }
+        }
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, roomWidth, roomHeight);
+        camera.position.x = destPos.x;
+        camera.position.y = destPos.y;
         camera.update();
     }
 
