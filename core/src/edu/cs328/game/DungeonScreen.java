@@ -140,7 +140,10 @@ public class DungeonScreen implements Screen{
                 }
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                player.takeHit(1);
+                 player.takeHit(1);
+                if(player.hp < 0){
+                     game.setScreen(new LoseScreen(game));
+                }
             }
             if(enemy.hp <= 0)
                 enemies.removeValue(enemy, true);
@@ -162,8 +165,10 @@ public class DungeonScreen implements Screen{
             else if(boss.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
                 player.takeHit(1);
             }
-            if(boss.hp <= 0)
+            if(boss.hp <= 0){
                 boss = null;
+                game.setScreen(new WinScreen(game));
+            }
         }
         batch.end();
         

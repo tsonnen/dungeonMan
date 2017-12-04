@@ -141,6 +141,9 @@ public class GameScreen implements Screen{
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
                 player.takeHit(1);
+                if(player.hp < 0){
+                     game.setScreen(new LoseScreen(game));
+                }
             }
             if(enemy.hp <= 0)
                 enemies.removeValue(enemy, true);

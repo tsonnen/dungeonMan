@@ -32,7 +32,7 @@ public class Player extends Unit implements InputProcessor{
     public Projectile projectile;
     private int dirX, dirY  = 0;
     public int attackDmg = 3;
-    public int maxHp = 3;
+    public int maxHp = 8;
 
     public Player(){
         speed = 2.5f;
