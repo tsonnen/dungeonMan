@@ -50,7 +50,17 @@ public class GameScreen implements Screen{
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
 
         player = new Player();
-        player.position = new Vector2(5, 5);
+
+        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
+        int x = 5;
+        int y = 5;
+        Cell cell = layer.getCell(x,y);
+        while(cell != null){
+            x++;
+            y++;
+        }
+
+        player.position = new Vector2(x, y);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, roomWidth, roomHeight);
