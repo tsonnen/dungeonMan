@@ -60,6 +60,17 @@ public class Dungeon {
                 walls.setCell(x + roomWidth/2 - 1, y + (roomHeight-1), null);
                 y += (roomHeight-1);
             }
+
+            if(i >= 49){
+                TiledMapTileLayer boss = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+                Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
+                Cell cell = new Cell();
+                cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
+                boss.setVisible(false);
+                boss.setCell(x + roomWidth/2, y + roomHeight/2, cell);
+                boss.setName("boss");
+                layers.add(boss);
+            }
         }
         walls.setName("walls");
 

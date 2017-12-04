@@ -40,6 +40,7 @@ public class DungeonScreen implements Screen{
     private int roomWidth = 16;
     private int roomHeight = 12;
     private GameScreen gameScreen;
+    private Lancer boss;
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
         this.game = game;
@@ -58,15 +59,13 @@ public class DungeonScreen implements Screen{
 
     @Override
     public void render (float delta) {
-        //float delta = Gdx.graphics.getDeltaTime();
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
-        //screenViewport.apply();
+
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         int x = (int)player.position.x / (roomWidth-1);
         int y = (int)player.position.y / (roomHeight -1);
-        //camera.position.x =  x * 9 + 5;
-        //camera.position.y = y * 9 + 5;
+
         Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
 
         camera.position.lerp(destPos, 4 * delta);
@@ -88,12 +87,19 @@ public class DungeonScreen implements Screen{
             camera.position.x  = destPos.x;
             camera.position.y = destPos.y;
             TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
+            TiledMapTileLayer bossLayer = (TiledMapTileLayer)map.getLayers().get("boss");
             enemies = new Array<Enemy>();
             for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
                 for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
                     Cell cell = enemyLayer.getCell(i, j);
                     if(cell != null){
                         enemies.add(new Enemy(i,j));
+                    }
+                    cell = bossLayer.getCell(i, j);
+                    if(cell != null){
+                        boss = new Lancer(i - 1, j - 1);
+                        boss.width = boss.height = 2;
+                        boss.hp = 30;
                     }
                 }
             }
@@ -132,6 +138,26 @@ public class DungeonScreen implements Screen{
             }
             if(enemy.hp <= 0)
                 enemies.removeValue(enemy, true);
+        }
+
+        if(boss != null){
+            boss.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
+            boss.render(batch, delta, map);
+            if(player.projectile != null && boss.bounds.overlaps(player.projectile.bounds)){
+                boss.takeHit(player.projectile.dmg);
+                player.projectile = null;
+            }
+            if(player.state == Unit.State.ATTACK){
+                if(boss.bounds.overlaps(player.getAttackBox())){
+                    boss.takeHit(player.attackDmg);
+                    player.stateTime = .15f;
+                }
+            }
+            else if(boss.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
+                player.takeHit(1);
+            }
+            if(boss.hp <= 0)
+                boss = null;
         }
         batch.end();
         
