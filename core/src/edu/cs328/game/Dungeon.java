@@ -24,6 +24,7 @@ public class Dungeon {
     private int deathLimit = 3;
     private int roomWidth = 16;
     private int roomHeight = 12;
+    public Vector2 bossLoc = new Vector2();
 
     public Dungeon(int width, int height, int tileWidth, int tileHeight){
         map = new TiledMap();
@@ -37,7 +38,7 @@ public class Dungeon {
         int x = 0;
         int y = 0;
         walls = makeRoom(0,0,walls);
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 20; i++){
             double seed = Math.random();
             if(seed < .25 && x > 0){
                 walls = makeRoom(x-(roomWidth-1),y, walls);
@@ -61,7 +62,7 @@ public class Dungeon {
                 y += (roomHeight-1);
             }
 
-            if(i >= 49){
+            if(i >= 19){
                 TiledMapTileLayer boss = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
                 Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
                 Cell cell = new Cell();
@@ -69,7 +70,7 @@ public class Dungeon {
                 boss.setVisible(false);
                 boss.setCell(x + roomWidth/2, y + roomHeight/2, cell);
                 boss.setName("boss");
-                System.out.print(x + roomWidth/2 + "," + y + roomHeight/2);
+                bossLoc.set(x + roomWidth/2,y + roomHeight/2);
                 layers.add(boss);
             }
         }
@@ -132,8 +133,8 @@ public class Dungeon {
 
 
         /* Make the background and place trees */
-        for(int x = 0; x < 50 * roomWidth; x++){
-            for(int y = 0; y < 50 * roomHeight; y++){
+        for(int x = 0; x < 20 * roomWidth; x++){
+            for(int y = 0; y < 20 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){
                     if(Math.random() < .05){
                         

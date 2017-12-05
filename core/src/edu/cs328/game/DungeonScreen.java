@@ -42,12 +42,14 @@ public class DungeonScreen implements Screen{
     private int roomHeight = 12;
     private GameScreen gameScreen;
     private Lancer boss;
+    private ShapeRenderer shapeRenderer;
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
         this.game = game;
         this.gameScreen = gameScreen;
         this.dungeon = dungeon;
         map = dungeon.map;
+        shapeRenderer = new ShapeRenderer();
         miniMap = new MiniMap(map);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
         player = new Player();
@@ -75,6 +77,7 @@ public class DungeonScreen implements Screen{
         //dungeon.doSimulation(100, 100);
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+        shapeRenderer.setProjectionMatrix(camera.combined);
 
        if((camera.position.x != destPos.x || camera.position.y != destPos.y) && stateTime < 1f){
 
@@ -202,6 +205,19 @@ public class DungeonScreen implements Screen{
         }
 
         batch.end();
+
+        shapeRenderer.begin(ShapeType.Filled);
+
+        shapeRenderer.setColor(.75f, .75f, .75f, 1);
+        float miniMapX = camera.position.x - roomWidth/2; 
+        float miniMapY = camera.position.y + roomWidth/2 - 3;
+        shapeRenderer.rect(miniMapX, miniMapY, 1, 1);
+        shapeRenderer.setColor(1f, 1f, 1f, 1);
+        shapeRenderer.rect((miniMapX/(roomWidth-1))/20 + miniMapX, (miniMapY/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
+        shapeRenderer.setColor(1f, 0f, 0f, 1);
+        shapeRenderer.rect(((dungeon.bossLoc.x - (roomWidth/2))/(roomWidth-1))/20 + miniMapX, ((dungeon.bossLoc.y - ((roomHeight - 1)/2))/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
+        
+        shapeRenderer.end();
         
         //miniMap.update(position.x, position.y);
         //miniMap.render();

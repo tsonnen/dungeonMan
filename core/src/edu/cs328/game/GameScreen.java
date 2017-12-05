@@ -156,7 +156,7 @@ public class GameScreen implements Screen{
         
         for(Rectangle entrance : dungeonEntrances){
             if(entrance.overlaps(player.bounds)){
-                game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
+                game.setScreen(new DungeonScreen(game, new Dungeon(20 * roomWidth,20 * roomHeight,16,16), this));
             }
         }
 
