@@ -23,6 +23,10 @@ public abstract class Projectile extends Unit{
 
     }
 
+    public void update(float delta){
+        
+    }
+
     @Override
     public void render(Batch batch, float delta, TiledMap map){
         getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);

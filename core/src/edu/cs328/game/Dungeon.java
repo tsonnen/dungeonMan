@@ -76,7 +76,7 @@ public class Dungeon {
 
         layers.add(walls);
 
-        placeEnemy(50 * roomWidth, 50 * roomHeight, walls);
+        placeEnemy(walls);
 
         spawn.set(roomWidth/2,roomHeight/2);
     }
@@ -115,44 +115,36 @@ public class Dungeon {
         return layer;
     }
 
-    private void placeEnemy(int width, int height, TiledMapTileLayer wallLayer){
+    private void placeEnemy(TiledMapTileLayer wallLayer){
         Texture texture = new Texture(Gdx.files.internal("treasure.png"));
-        TiledMapTileLayer enemies = new TiledMapTileLayer(width, height, 16, 16);
+        TiledMapTileLayer enemies = new TiledMapTileLayer(50 * roomWidth, 50 * roomHeight, 16, 16);
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
 
+        Cell lancerCell = new Cell();
+        lancerCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        lancerCell.getTile().getProperties().put("type", "lancer");
+
+        Cell whelpCell = new Cell();
+        whelpCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        whelpCell.getTile().getProperties().put("type", "whelp");
+
+
+        /* Make the background and place trees */
         for(int x = 0; x < 50 * roomWidth; x++){
             for(int y = 0; y < 50 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){
-                    if(Math.random() < .4)
-                        enemies.setCell(x,y,cell);
-                }
-            }
-        }
-
-        for(int i = 0; i < 3; i++){
-            TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
-            for(int x = 0; x<width; x++){
-                for(int y = 0; y < height; y++){
-                    if(wallLayer.getCell(x,y) == null){
-                        int nbs = countAliveNeighbours(x, y, width, height, enemies) +  countAliveNeighbours(x, y, width, height, wallLayer);
-                        //The new value is based on our simulation rules
-                        //First, if a cell is alive but has too few neighbours, kill it.
-                        Cell neighbour = enemies.getCell(x,y);
-                        if(neighbour != null){
-                            if(nbs > 6){
-                                newLayer.setCell(x, y, cell);
-                            }
-                        } //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
+                    if(Math.random() < .05){
+                        
+                        if(Math.random() > .5){
+                            enemies.setCell(x,y,lancerCell);
+                        }
                         else{
-                            if(nbs > 7){
-                                newLayer.setCell(x, y, cell);
-                            }
+                            enemies.setCell(x,y,whelpCell);
                         }
                     }
                 }
             }
-            enemies = newLayer;
         }
 
         enemies.setVisible(false);

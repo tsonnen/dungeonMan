@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Enemy extends Unit{
-    private int awareness;
+    public Projectile projectile = null;
     public Enemy(){
         init();
     }
@@ -31,7 +31,6 @@ public class Enemy extends Unit{
         Texture texture = new Texture(Gdx.files.internal("devil.png"));
         sprite = new Sprite(texture);
         movement = new Vector2();
-        awareness = 100;
         setDimensions();
         newDirection();
     }

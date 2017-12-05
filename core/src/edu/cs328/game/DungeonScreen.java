@@ -86,12 +86,17 @@ public class DungeonScreen implements Screen{
                 enemies.clear();
                 for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
                     for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
-                        Cell cell = enemyLayer.getCell(i, j);
-                        if(cell != null){
-                            enemies.add(new Enemy(i,j));
+                        Cell enemyCell = enemyLayer.getCell(i, j);
+                        if(enemyCell != null){
+                            String enemyType = enemyCell.getTile().getProperties().get("type", String.class);
+                            
+                            if(enemyType.equals("lancer"))
+                                enemies.add(new Lancer(i,j));
+                            else
+                                enemies.add(new Whelp(i,j));
                         }
-                        cell = bossLayer.getCell(i, j);
-                        if(cell != null){
+                        enemyCell = bossLayer.getCell(i, j);
+                        if(enemyCell != null){
                             boss = new Lancer(i - 1, j - 1);
                             boss.width = boss.height = 2;
                             boss.hp = 30;
@@ -133,6 +138,12 @@ public class DungeonScreen implements Screen{
                 enemy.takeHit(player.projectile.dmg);
                 player.projectile = null;
             }
+
+            if(enemy.projectile != null && player.bounds.overlaps(enemy.projectile.bounds)){
+                player.takeHit(1);
+                enemy.projectile = null;
+            }
+
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(player.getAttackBox())){
                     enemy.takeHit(player.attackDmg);
@@ -140,7 +151,7 @@ public class DungeonScreen implements Screen{
                 }
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                 player.takeHit(1);
+                player.takeHit(1);
                 if(player.hp < 0){
                      game.setScreen(new LoseScreen(game));
                 }

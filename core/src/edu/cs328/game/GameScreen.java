@@ -115,7 +115,12 @@ public class GameScreen implements Screen{
                         Cell enemyCell = enemyLayer.getCell(i, j);
                         Cell entranceCell = dungeonLayer.getCell(i, j);
                         if(enemyCell != null){
-                            enemies.add(new Lancer(i,j));
+                            String enemyType = enemyCell.getTile().getProperties().get("type", String.class);
+                            
+                            if(enemyType.equals("lancer"))
+                                enemies.add(new Lancer(i,j));
+                            else
+                                enemies.add(new Whelp(i,j));
                         }
                         if(entranceCell != null){
                             dungeonEntrances.add(new Rectangle(i,j,1,1));
@@ -157,6 +162,12 @@ public class GameScreen implements Screen{
                 enemy.takeHit(player.projectile.dmg);
                 player.projectile = null;
             }
+
+            if(enemy.projectile != null && player.bounds.overlaps(enemy.projectile.bounds)){
+                player.takeHit(1);
+                enemy.projectile = null;
+            }
+
             if(player.state == Unit.State.ATTACK){
                 if(enemy.bounds.overlaps(player.getAttackBox())){
                     enemy.takeHit(player.attackDmg);
@@ -267,44 +278,57 @@ public class GameScreen implements Screen{
     private void placeEnemy(int width, int height, TiledMapTileLayer wallLayer){
         Texture texture = new Texture(Gdx.files.internal("treasure.png"));
         TiledMapTileLayer enemies = new TiledMapTileLayer(width, height, 16, 16);
-        Cell cell = new Cell();
-        cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+
+        Cell lancerCell = new Cell();
+        lancerCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        lancerCell.getTile().getProperties().put("type", "lancer");
+
+        Cell whelpCell = new Cell();
+        whelpCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        whelpCell.getTile().getProperties().put("type", "whelp");
 
 
         /* Make the background and place trees */
         for(int x = 0; x < 50 * roomWidth; x++){
             for(int y = 0; y < 50 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){
-                    if(Math.random() < .4)
-                        enemies.setCell(x,y,cell);
-                }
-            }
-        }
-
-        for(int i = 0; i < 3; i++){
-            TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
-            for(int x = 0; x<width; x++){
-                for(int y = 0; y < height; y++){
-                    if(wallLayer.getCell(x,y) == null){
-                        int nbs = countAliveNeighbours(x, y, width, height, enemies) +  countAliveNeighbours(x, y, width, height, wallLayer);
-                        //The new value is based on our simulation rules
-                        //First, if a cell is alive but has too few neighbours, kill it.
-                        Cell neighbour = enemies.getCell(x,y);
-                        if(neighbour != null){
-                            if(nbs > 4){
-                                newLayer.setCell(x, y, cell);
-                            }
-                        } //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
+                    if(Math.random() < .05){
+                        
+                        if(Math.random() > .5){
+                            enemies.setCell(x,y,lancerCell);
+                        }
                         else{
-                            if(nbs > 5){
-                                newLayer.setCell(x, y, cell);
-                            }
+                            enemies.setCell(x,y,whelpCell);
                         }
                     }
                 }
             }
-            enemies = newLayer;
         }
+
+        //for(int i = 0; i < 3; i++){
+            //TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
+            //for(int x = 0; x<width; x++){
+                //for(int y = 0; y < height; y++){
+                    //if(wallLayer.getCell(x,y) == null){
+                        //int nbs = countAliveNeighbours(x, y, width, height, enemies) +  countAliveNeighbours(x, y, width, height, wallLayer);
+                        ////The new value is based on our simulation rules
+                        ////First, if a cell is alive but has too few neighbours, kill it.
+                        //Cell neighbour = enemies.getCell(x,y);
+                        //if(neighbour != null){
+                            //if(nbs > 4){
+                                //newLayer.setCell(x, y, cell);
+                            //}
+                        //} //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
+                        //else{
+                            //if(nbs > 5){
+                                //newLayer.setCell(x, y, cell);
+                            //}
+                        //}
+                    //}
+                //}
+            //}
+            //enemies = newLayer;
+        //}
 
         enemies.setVisible(false);
         enemies.setName("enemies");
