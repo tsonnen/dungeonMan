@@ -39,6 +39,7 @@ public class GameScreen implements Screen{
     private int deathLimit = 3;
     private MapLayers layers;
     private Array<Enemy> enemies = new Array<Enemy>();
+    private Array<Item> items = new Array<Item>();
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
 
     public GameScreen(final DungeonMan game) {
@@ -110,6 +111,7 @@ public class GameScreen implements Screen{
                 TiledMapTileLayer dungeonLayer = (TiledMapTileLayer)map.getLayers().get("entrance");
                 enemies.clear();
                 dungeonEntrances.clear();
+                items.clear();
                 for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
                     for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
                         Cell enemyCell = enemyLayer.getCell(i, j);
@@ -142,19 +144,26 @@ public class GameScreen implements Screen{
 
         Batch batch = tiledMapRenderer.getBatch();
         batch.begin();
-        player.update(delta);
-        player.render(batch, delta, map);
 
-        Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
-        for(int i = 0; i < player.maxHp; i++){
-            if(i < player.hp){
-                batch.draw(new TextureRegion(hearts, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f);
+        /* Draw items and entrances before (under) Player and enemies */
+        for(Item item : items){
+            item.render(batch);
+            if(player.bounds.overlaps(item.bounds) && player.hp < player.maxHp){
+                player.hp++;
+                items.removeValue(item, true);
             }
-            else{
-                batch.draw(new TextureRegion(hearts, 0, 8, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f); 
+        }
+        
+        for(Rectangle entrance : dungeonEntrances){
+            if(entrance.overlaps(player.bounds)){
+                game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
             }
         }
 
+        player.update(delta);
+        player.render(batch, delta, map);
+
+        /* Draw enemies 'over' player */
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
@@ -180,15 +189,25 @@ public class GameScreen implements Screen{
                      game.setScreen(new LoseScreen(game));
                 }
             }
-            if(enemy.hp <= 0)
+            if(enemy.hp <= 0){
+                if(Math.random() < .5){
+                    items.add(new Item(enemy.position.x, enemy.position.y));
+                }
                 enemies.removeValue(enemy, true);
-        }
-        
-        for(Rectangle entrance : dungeonEntrances){
-            if(entrance.overlaps(player.bounds)){
-                game.setScreen(new DungeonScreen(game, new Dungeon(500,100,16,16), this));
             }
         }
+
+        /* Draw hearts over everything */
+        Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
+        for(int i = 0; i < player.maxHp; i++){
+            if(i < player.hp){
+                batch.draw(new TextureRegion(hearts, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f);
+            }
+            else{
+                batch.draw(new TextureRegion(hearts, 0, 8, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f); 
+            }
+        }
+
         batch.end();
     }
 

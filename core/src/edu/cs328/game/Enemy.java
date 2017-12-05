@@ -33,6 +33,7 @@ public class Enemy extends Unit{
         movement = new Vector2();
         setDimensions();
         newDirection();
+        bounds = new Rectangle(position.x, position.y, width, height);
     }
 
     public void update(float delta, float x, float y, float width, float height){

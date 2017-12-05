@@ -56,6 +56,8 @@ public class Lancer extends Enemy{
         sprite = new Sprite(upWalkFrames[0]);
         newDirection();
         width = height = 1f;
+
+        bounds = new Rectangle(position.x, position.y, width, height);
     }
 
     @Override

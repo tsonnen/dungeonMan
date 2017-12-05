@@ -69,6 +69,7 @@ public class Dungeon {
                 boss.setVisible(false);
                 boss.setCell(x + roomWidth/2, y + roomHeight/2, cell);
                 boss.setName("boss");
+                System.out.print(x + roomWidth/2 + "," + y + roomHeight/2);
                 layers.add(boss);
             }
         }

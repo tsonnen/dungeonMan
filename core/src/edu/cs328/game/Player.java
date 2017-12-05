@@ -67,6 +67,8 @@ public class Player extends Unit implements InputProcessor{
 
         movement = new Vector2();
         width = height = 1f;
+
+        bounds = new Rectangle(position.x, position.y, width, height);
     }
 
     public void update(float delta){

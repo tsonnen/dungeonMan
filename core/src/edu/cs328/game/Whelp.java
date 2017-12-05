@@ -53,6 +53,8 @@ public class Whelp extends Enemy{
         sprite = new Sprite(leftWalkFrames[0]);
         newDirection();
         width = height = 1f;
+
+        bounds = new Rectangle(position.x, position.y, width, height);
     }
 
     @Override
