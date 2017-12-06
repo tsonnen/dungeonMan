@@ -114,6 +114,25 @@ public class Dungeon {
                 layer.setCell(startX + (roomWidth-1), startY + y, cell);
             }
         }
+
+        /* Randomly place some blocks in the room */
+        double seed = Math.random();
+        if (seed < .5){
+            layer.setCell(startX + roomWidth/3, startY + roomHeight/2, cell);
+            layer.setCell(startX + roomWidth - roomWidth/3, startY + roomHeight/2, cell);
+            if(seed > .25){
+                layer.setCell(startX + roomWidth/2, startY + roomHeight/3, cell);
+                layer.setCell(startX + roomWidth/2, startY + roomHeight - roomHeight/3, cell);
+            }
+
+        }else if(seed < .75){
+            for(int i = 1; i < 3; i++){
+                layer.setCell(startX + roomWidth/2 + i, startY + roomHeight/2 + i, cell);
+                layer.setCell(startX + roomWidth/2 - i, startY + roomHeight/2 + i, cell);
+                layer.setCell(startX + roomWidth/2 - i, startY + roomHeight/2 - i, cell);
+                layer.setCell(startX + roomWidth/2 + i, startY + roomHeight/2 - i, cell);
+            }
+        }
         return layer;
     }
 

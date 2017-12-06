@@ -206,6 +206,7 @@ public class DungeonScreen implements Screen{
 
         batch.end();
 
+        /* Minimap */
         shapeRenderer.begin(ShapeType.Filled);
 
         shapeRenderer.setColor(.75f, .75f, .75f, 1);
@@ -215,13 +216,9 @@ public class DungeonScreen implements Screen{
         shapeRenderer.setColor(1f, 1f, 1f, 1);
         shapeRenderer.rect((miniMapX/(roomWidth-1))/20 + miniMapX, (miniMapY/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
         shapeRenderer.setColor(1f, 0f, 0f, 1);
-        shapeRenderer.rect(((dungeon.bossLoc.x - (roomWidth/2))/(roomWidth-1))/20 + miniMapX, ((dungeon.bossLoc.y - ((roomHeight - 1)/2))/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
+        shapeRenderer.rect(((dungeon.bossLoc.x - (roomWidth/2))/(roomWidth-1))/20 + miniMapX, ((dungeon.bossLoc.y - ((roomHeight -  1)/2))/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
         
         shapeRenderer.end();
-        
-        //miniMap.update(position.x, position.y);
-        //miniMap.render();
-
     }
     
     @Override
