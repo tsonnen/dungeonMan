@@ -67,7 +67,7 @@ public abstract class Projectile extends Unit{
 
     public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
-        if(position.x + this. width > x + width || position.x < x || position.y + this.height > y + height  || position.y < y){
+        if(position.x > x + width || position.x < x || position.y > y + height  || position.y < y){
             atWall = true;
         }
     }

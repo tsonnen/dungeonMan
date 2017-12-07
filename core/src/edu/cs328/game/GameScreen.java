@@ -196,9 +196,6 @@ public class GameScreen implements Screen{
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
                 player.takeHit(enemy.attackDmg);
-                if(player.hp < 0){
-                     game.setScreen(new LoseScreen(game));
-                }
             }
             if(enemy.hp <= 0){
                 double seed = Math.random();
@@ -211,6 +208,10 @@ public class GameScreen implements Screen{
                 ((TiledMapTileLayer)map.getLayers().get("enemies")).setCell((int)enemy.id.x, (int)enemy.id.y, null);
                 enemies.removeValue(enemy, true);
             }
+        }
+
+        if(player.hp <= 0){
+            game.setScreen(new LoseScreen(game));
         }
 
         /* Draw hearts over everything */

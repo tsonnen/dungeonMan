@@ -35,7 +35,6 @@ public class DungeonScreen implements Screen{
     private Array<Enemy> enemies = new Array<Enemy>();
     private Array<Item> items = new Array<Item>();
     private Vector2 position;
-    private MiniMap miniMap;
     private float stateTime = 0;
     final DungeonMan game;
     private int roomWidth = 16;
@@ -50,7 +49,6 @@ public class DungeonScreen implements Screen{
         this.dungeon = dungeon;
         map = dungeon.map;
         shapeRenderer = new ShapeRenderer();
-        miniMap = new MiniMap(map);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
         player = new Player();
         player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
@@ -170,9 +168,6 @@ public class DungeonScreen implements Screen{
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
                 player.takeHit(enemy.attackDmg);
-                if(player.hp < 0){
-                     game.setScreen(new LoseScreen(game));
-                }
             }
             if(enemy.hp <= 0){
                 double seed = Math.random();
@@ -207,6 +202,9 @@ public class DungeonScreen implements Screen{
                 boss = null;
                 game.setScreen(new WinScreen(game));
             }
+        }
+        if(player.hp <= 0){
+            game.setScreen(new LoseScreen(game));
         }
 
         /* Draw hearts over everything */
