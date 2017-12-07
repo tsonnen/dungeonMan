@@ -33,7 +33,9 @@ public class Whelp extends Enemy{
     public void init(){
         hp = 6;
         speed = 2f;
+        attackDmg = 1;
         movement = new Vector2();
+        id.set(position.x, position.y);
 
         spriteSheet = new Texture(Gdx.files.internal("whelp.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 32, 32);
@@ -116,7 +118,7 @@ public class Whelp extends Enemy{
     }
 
     @Override
-     public void render(Batch batch, float delta, TiledMap map){
+    public void render(Batch batch, float delta, TiledMap map){
         if(wallCollide){
             getCollision((TiledMapTileLayer)map.getLayers().get("walls"), delta);
             //getCollision((TiledMapTileLayer)map.getLayers().get("treasure"), delta);

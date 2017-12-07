@@ -121,8 +121,10 @@ public class GameScreen implements Screen{
                             
                             if(enemyType.equals("lancer"))
                                 enemies.add(new Lancer(i,j));
-                            else
+                            else if(enemyType.equals("whelp"))
                                 enemies.add(new Whelp(i,j));
+                             else if(enemyType.equals("kultist"))
+                                enemies.add(new Kultist(i,j));
                         }
                         if(entranceCell != null){
                             dungeonEntrances.add(new Rectangle(i,j,1,1));
@@ -193,7 +195,7 @@ public class GameScreen implements Screen{
                 }
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                player.takeHit(1);
+                player.takeHit(enemy.attackDmg);
                 if(player.hp < 0){
                      game.setScreen(new LoseScreen(game));
                 }
@@ -205,6 +207,8 @@ public class GameScreen implements Screen{
                 }else if(seed < .9){
                     items.add(new CollectableKnife(enemy.position.x, enemy.position.y));
                 }
+                /* Delete enemy once they are killed */
+                ((TiledMapTileLayer)map.getLayers().get("enemies")).setCell((int)enemy.id.x, (int)enemy.id.y, null);
                 enemies.removeValue(enemy, true);
             }
         }
@@ -323,18 +327,25 @@ public class GameScreen implements Screen{
         whelpCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
         whelpCell.getTile().getProperties().put("type", "whelp");
 
+        Cell kultistCell = new Cell();
+        kultistCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        kultistCell.getTile().getProperties().put("type", "kultist");
+
 
         /* Make the background and place trees */
         for(int x = 0; x < 50 * roomWidth; x++){
             for(int y = 0; y < 50 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){
                     if(Math.random() < .05){
-                        
-                        if(Math.random() > .5){
+                        double seed = Math.random();
+                        if(seed < .33){
                             enemies.setCell(x,y,lancerCell);
                         }
-                        else{
+                        else if(seed < .66){
                             enemies.setCell(x,y,whelpCell);
+                        }
+                        else{
+                            enemies.setCell(x,y, kultistCell);
                         }
                     }
                 }

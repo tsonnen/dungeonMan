@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Enemy extends Unit{
     public Projectile projectile = null;
+    public Vector2 id = new Vector2();
     public Enemy(){
         init();
     }

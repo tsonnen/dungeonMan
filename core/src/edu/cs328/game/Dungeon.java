@@ -154,23 +154,31 @@ public class Dungeon {
         whelpCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
         whelpCell.getTile().getProperties().put("type", "whelp");
 
+        Cell kultistCell = new Cell();
+        kultistCell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        kultistCell.getTile().getProperties().put("type", "kultist");
+
 
         /* Make the background and place trees */
-        for(int x = 0; x < 20 * roomWidth; x++){
-            for(int y = 0; y < 20 * roomHeight; y++){
+        for(int x = 0; x < 50 * roomWidth; x++){
+            for(int y = 0; y < 50 * roomHeight; y++){
                 if(wallLayer.getCell(x,y) == null){
                     if(Math.random() < .05){
-                        
-                        if(Math.random() > .5){
+                        double seed = Math.random();
+                        if(seed < .33){
                             enemies.setCell(x,y,lancerCell);
                         }
-                        else{
+                        else if(seed < .66){
                             enemies.setCell(x,y,whelpCell);
+                        }
+                        else{
+                            enemies.setCell(x,y, kultistCell);
                         }
                     }
                 }
             }
         }
+
 
         enemies.setVisible(false);
         enemies.setName("enemies");

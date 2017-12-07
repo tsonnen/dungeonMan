@@ -31,13 +31,14 @@ public class Player extends Unit implements InputProcessor{
     private Texture spriteSheet;
     public Projectile projectile;
     private int dirX, dirY  = 0;
-    public int attackDmg = 6;
     public int maxHp = 6;
     public int numKnife = 10;
 
     public Player(){
         speed = 2.5f;
         hp = maxHp;
+        attackDmg = 6;
+        
         spriteSheet = new Texture(Gdx.files.internal("notlink.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 16, 16);
         TextureRegion [] upWalkFrames = new TextureRegion[4];

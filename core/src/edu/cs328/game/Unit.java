@@ -17,7 +17,7 @@ public abstract class Unit{
     public Sprite sprite;
     public Vector2 position = new Vector2();
     public int hp;
-    public Rectangle bounds;
+    public Rectangle bounds = new Rectangle();
     public Vector2 movement = new Vector2();
     public float speed;
     public float width;
@@ -25,6 +25,7 @@ public abstract class Unit{
     public boolean wallCollide = true;
     public boolean atWall = false;
     public float stateTime = 0f;
+    public int attackDmg;
 
     public enum State{
         WALKING, ATTACK, HURT

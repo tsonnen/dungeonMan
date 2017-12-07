@@ -97,8 +97,11 @@ public class DungeonScreen implements Screen{
                             
                             if(enemyType.equals("lancer"))
                                 enemies.add(new Lancer(i,j));
-                            else
+                            else if(enemyType.equals("whelp"))
                                 enemies.add(new Whelp(i,j));
+                             else if(enemyType.equals("kultist"))
+                                enemies.add(new Kultist(i,j));
+
                         }
                         enemyCell = bossLayer.getCell(i, j);
                         if(enemyCell != null){
@@ -166,18 +169,20 @@ public class DungeonScreen implements Screen{
                 }
             }
             else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                player.takeHit(1);
+                player.takeHit(enemy.attackDmg);
                 if(player.hp < 0){
                      game.setScreen(new LoseScreen(game));
                 }
             }
-             if(enemy.hp <= 0){
+            if(enemy.hp <= 0){
                 double seed = Math.random();
                 if(seed < .45){
                     items.add(new Heart(enemy.position.x, enemy.position.y));
                 }else if(seed < .9){
                     items.add(new CollectableKnife(enemy.position.x, enemy.position.y));
                 }
+                /* Delete enemy once they are killed */
+                ((TiledMapTileLayer)map.getLayers().get("enemies")).setCell((int)enemy.id.x, (int)enemy.id.y, null);
                 enemies.removeValue(enemy, true);
             }
         }
