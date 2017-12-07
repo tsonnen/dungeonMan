@@ -73,9 +73,9 @@ public class Dungeon {
         bossLoc.set(x + roomWidth/2,y + roomHeight/2);
         layers.add(boss);
         /* Clear the room where the bos is */
-        for(int i = x + 1; i < roomWidth - 1; i++){
-            for(int j = y + 1; j < roomHeight -1; j++){
-                walls.setCell(i,j, null);
+        for(int i = x + 1; i < x + roomWidth - 1; i++){
+            for(int j = y + 1; j < y + roomHeight - 1; j++){
+                walls.setCell(i,j,null);
             }
         }
         walls.setName("walls");

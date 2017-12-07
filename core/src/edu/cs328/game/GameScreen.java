@@ -148,9 +148,14 @@ public class GameScreen implements Screen{
         /* Draw items and entrances before (under) Player and enemies */
         for(Item item : items){
             item.render(batch);
-            if(player.bounds.overlaps(item.bounds) && player.hp < player.maxHp){
+            if(player.bounds.overlaps(item.bounds)){
+                if(item instanceof Heart && player.hp < player.maxHp){
                 player.hp++;
                 items.removeValue(item, true);
+                }else if(item instanceof CollectableKnife){
+                    player.numKnife++;
+                    items.removeValue(item, true);
+                }
             }
         }
         
@@ -194,8 +199,11 @@ public class GameScreen implements Screen{
                 }
             }
             if(enemy.hp <= 0){
-                if(Math.random() < .5){
-                    items.add(new Item(enemy.position.x, enemy.position.y));
+                double seed = Math.random();
+                if(seed < .45){
+                    items.add(new Heart(enemy.position.x, enemy.position.y));
+                }else if(seed < .9){
+                    items.add(new CollectableKnife(enemy.position.x, enemy.position.y));
                 }
                 enemies.removeValue(enemy, true);
             }
@@ -210,6 +218,11 @@ public class GameScreen implements Screen{
             else{
                 batch.draw(new TextureRegion(hearts, 0, 8, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f); 
             }
+        }
+        /* Draw hearts over everything */
+        Texture knife = new Texture(Gdx.files.internal("knife.png"));
+        for(int i = 0; i < player.numKnife; i++){
+            batch.draw(new TextureRegion(knife, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .3f, camera.position.y + ((roomHeight)/2 - 1f), .5f, .5f);
         }
 
         batch.end();
@@ -328,31 +341,6 @@ public class GameScreen implements Screen{
             }
         }
 
-        //for(int i = 0; i < 3; i++){
-            //TiledMapTileLayer newLayer = new TiledMapTileLayer(width, height, 16, 16);
-            //for(int x = 0; x<width; x++){
-                //for(int y = 0; y < height; y++){
-                    //if(wallLayer.getCell(x,y) == null){
-                        //int nbs = countAliveNeighbours(x, y, width, height, enemies) +  countAliveNeighbours(x, y, width, height, wallLayer);
-                        ////The new value is based on our simulation rules
-                        ////First, if a cell is alive but has too few neighbours, kill it.
-                        //Cell neighbour = enemies.getCell(x,y);
-                        //if(neighbour != null){
-                            //if(nbs > 4){
-                                //newLayer.setCell(x, y, cell);
-                            //}
-                        //} //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
-                        //else{
-                            //if(nbs > 5){
-                                //newLayer.setCell(x, y, cell);
-                            //}
-                        //}
-                    //}
-                //}
-            //}
-            //enemies = newLayer;
-        //}
-
         enemies.setVisible(false);
         enemies.setName("enemies");
         layers.add(enemies);
@@ -410,5 +398,9 @@ public class GameScreen implements Screen{
     public void resume() {
         // TODO Auto-generated method stub
         
+    }
+
+    public Player getPlayer(){
+        return player;
     }
 }

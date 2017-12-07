@@ -31,8 +31,9 @@ public class Player extends Unit implements InputProcessor{
     private Texture spriteSheet;
     public Projectile projectile;
     private int dirX, dirY  = 0;
-    public int attackDmg = 3;
-    public int maxHp = 8;
+    public int attackDmg = 6;
+    public int maxHp = 6;
+    public int numKnife = 10;
 
     public Player(){
         speed = 2.5f;
@@ -295,8 +296,10 @@ public class Player extends Unit implements InputProcessor{
                 }
                 break;
             case Keys.K:
-                if(projectile == null)
+                if(projectile == null && numKnife > 0){
                     projectile = new Knife(position.x + width/2, position.y + height/2, facing);
+                    numKnife--;
+                }
                 break;
             default:
                 break;

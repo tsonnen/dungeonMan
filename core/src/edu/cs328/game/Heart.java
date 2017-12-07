@@ -14,18 +14,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-public abstract class Item{
-    public TextureRegion textureRegion;
-    public Vector2 position = new Vector2();
-    public Rectangle bounds;
-    public float width;
-    public float height;
+public class Heart extends Item{
 
-    public Item(){
-    }
-
-    /* Place the Unit without regard to the a map */
-    public void render(Batch batch){
-        batch.draw(textureRegion, position.x, position.y, width, height);
+    public Heart(float x, float y){
+        Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
+        textureRegion = new TextureRegion(hearts, 0, 0, 8, 8);
+        width = height = .5f;
+        position.set(x,y);
+        bounds = new Rectangle(position.x, position.y, width, height);
     }
 }

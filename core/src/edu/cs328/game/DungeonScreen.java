@@ -124,12 +124,17 @@ public class DungeonScreen implements Screen{
         Batch batch = tiledMapRenderer.getBatch();
         batch.begin();
 
-       /* Draw items and entrances before (under) Player and enemies */
+        /* Draw items and entrances before (under) Player and enemies */
         for(Item item : items){
             item.render(batch);
-            if(player.bounds.overlaps(item.bounds) && player.hp < player.maxHp){
+            if(player.bounds.overlaps(item.bounds)){
+                if(item instanceof Heart && player.hp < player.maxHp){
                 player.hp++;
                 items.removeValue(item, true);
+                }else if(item instanceof CollectableKnife){
+                    player.numKnife++;
+                    items.removeValue(item, true);
+                }
             }
         }
         
@@ -166,9 +171,12 @@ public class DungeonScreen implements Screen{
                      game.setScreen(new LoseScreen(game));
                 }
             }
-            if(enemy.hp <= 0){
-                if(Math.random() < .5){
-                    items.add(new Item(enemy.position.x, enemy.position.y));
+             if(enemy.hp <= 0){
+                double seed = Math.random();
+                if(seed < .45){
+                    items.add(new Heart(enemy.position.x, enemy.position.y));
+                }else if(seed < .9){
+                    items.add(new CollectableKnife(enemy.position.x, enemy.position.y));
                 }
                 enemies.removeValue(enemy, true);
             }
@@ -196,7 +204,7 @@ public class DungeonScreen implements Screen{
             }
         }
 
-         /* Draw hearts over everything */
+        /* Draw hearts over everything */
         Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
         for(int i = 0; i < player.maxHp; i++){
             if(i < player.hp){
@@ -206,13 +214,18 @@ public class DungeonScreen implements Screen{
                 batch.draw(new TextureRegion(hearts, 0, 8, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f); 
             }
         }
+        /* Draw hearts over everything */
+        Texture knife = new Texture(Gdx.files.internal("knife.png"));
+        for(int i = 0; i < player.numKnife; i++){
+            batch.draw(new TextureRegion(knife, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .3f, camera.position.y + ((roomHeight)/2 - 1f), .5f, .5f);
+        }
 
         batch.end();
 
         /* Minimap */
         shapeRenderer.begin(ShapeType.Filled);
 
-        shapeRenderer.setColor(.75f, .75f, .75f, 1);
+        shapeRenderer.setColor(0f,  0f, 1f, 1);
         float miniMapX = camera.position.x - roomWidth/2; 
         float miniMapY = camera.position.y + roomWidth/2 - 3;
         shapeRenderer.rect(miniMapX, miniMapY, 1, 1);
@@ -237,6 +250,8 @@ public class DungeonScreen implements Screen{
 
     @Override
     public void show(){
+        player.maxHp = player.hp = gameScreen.getPlayer().maxHp;
+        player.numKnife = gameScreen.getPlayer().numKnife;
     }
 
     public void resize(int width, int height) {
