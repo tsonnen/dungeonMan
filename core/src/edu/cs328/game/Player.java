@@ -71,7 +71,7 @@ public class Player extends Unit implements InputProcessor{
         bounds = new Rectangle(position.x, position.y, width, height);
     }
 
-    public void update(float delta){
+    public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
         if(state == Unit.State.ATTACK && stateTime >= .15f){
             state = Unit.State.WALKING;
@@ -119,6 +119,9 @@ public class Player extends Unit implements InputProcessor{
                     break;
             }
         }
+
+        if(projectile != null)
+            projectile.update(delta, x, y, width, height);
     }
 
     @Override
@@ -140,10 +143,42 @@ public class Player extends Unit implements InputProcessor{
 
         if(projectile != null){
             projectile.render(batch, delta, map);
-            if(projectile.atWall || projectile.dead){
+            if(projectile.atWall){
                 projectile = null;
             }
         }
+    }
+
+    /* Allow for the player to block the projectile */
+    @Override
+    public void takeHit(int dmg, Facing hitFacing){
+        switch(hitFacing){
+            case UP:
+                if(facing == Facing.DOWN){
+                    return;
+                }
+                break;
+            case DOWN:
+                if(facing == Facing.UP){
+                    return;
+                }
+                break;
+            case LEFT:
+                if(facing == Facing.RIGHT){
+                    return;
+                }
+                break;
+            case RIGHT:
+                if(facing == Facing.LEFT){
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+        hp -= dmg;
+        state = State.HURT;
+        stateTime = 0f;
     }
 
     private void getFacing(){

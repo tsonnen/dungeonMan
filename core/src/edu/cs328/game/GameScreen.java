@@ -157,10 +157,11 @@ public class GameScreen implements Screen{
         for(Rectangle entrance : dungeonEntrances){
             if(entrance.overlaps(player.bounds)){
                 game.setScreen(new DungeonScreen(game, new Dungeon(20 * roomWidth,20 * roomHeight,16,16), this));
+                ((TiledMapTileLayer)map.getLayers().get("entrance")).setCell((int)entrance.x, (int)entrance.y, null); // Remove an entrance once it is used 
             }
         }
 
-        player.update(delta);
+        player.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
         player.render(batch, delta, map);
 
         /* Draw enemies 'over' player */
@@ -173,7 +174,10 @@ public class GameScreen implements Screen{
             }
 
             if(enemy.projectile != null && player.bounds.overlaps(enemy.projectile.bounds)){
-                player.takeHit(1);
+                if(enemy.projectile.blockAble)
+                    player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
+                else
+                    player.takeHit(enemy.projectile.dmg);
                 enemy.projectile = null;
             }
 

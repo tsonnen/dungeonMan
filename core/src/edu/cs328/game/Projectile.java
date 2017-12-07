@@ -17,7 +17,7 @@ public abstract class Projectile extends Unit{
     public int dmg;
     public float startX;
     public float startY;
-    public boolean dead = false;
+    public boolean blockAble = true;
 
     public Projectile(){
 
@@ -40,7 +40,6 @@ public abstract class Projectile extends Unit{
     @Override
     public void getCollision(TiledMapTileLayer layer, float delta){
         Array<Rectangle> rectPool = new Array<Rectangle>();
-        atWall = false;
         /* Get the tiles in a 3 tile radius. Using a smaller radius fails greatly! */
         for(int x = (int)position.x - 3; x < (int)position.x + 3; x++){
             for(int y = (int)position.y - 3; y < (int)position.y + 3; y++){
@@ -65,4 +64,12 @@ public abstract class Projectile extends Unit{
             }
         }
     }
+
+    public void update(float delta, float x, float y, float width, float height){
+        stateTime += delta;
+        if(position.x + this. width > x + width || position.x < x || position.y + this.height > y + height  || position.y < y){
+            atWall = true;
+        }
+    }
+
 }

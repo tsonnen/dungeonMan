@@ -21,7 +21,8 @@ public class FireBall extends Projectile{
     private Animation<TextureRegion> animation;
 
     public FireBall(float x, float y, Facing facing){
-        dmg = 3;
+        this.facing = facing;
+        dmg = 1;
         speed = 5f;
 
         spriteSheet = new Texture(Gdx.files.internal("fireBall.png"));
@@ -41,7 +42,7 @@ public class FireBall extends Projectile{
 
         position.set(x - width/2, y - height/2);
 
-        switch(facing){
+        switch(this.facing){
             case LEFT:
                 movement.set(-1, 0);
                 break;
@@ -53,8 +54,12 @@ public class FireBall extends Projectile{
         }
     }
 
-    public void update(float delta){
+    @Override
+    public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
         sprite.setRegion(animation.getKeyFrame(stateTime, true));
+        if(position.x + this.width > x + width || position.x < x || position.y + this.height > y + height  || position.y < y){
+            atWall = true;
+        }
     }
 }

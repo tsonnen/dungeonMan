@@ -110,6 +110,7 @@ public class Whelp extends Enemy{
             projectile = new FireBall(position.x + .5f, position.y + .5f, facing);
         }
         else if(projectile != null){
+            projectile.update(delta, x, y, width, height);
             projectileTimer = 0f;
         }
     }
@@ -128,9 +129,8 @@ public class Whelp extends Enemy{
 
 
         if(projectile != null){
-            projectile.update(delta);
             projectile.render(batch, delta, map);
-            if(projectile.atWall || projectile.dead){
+            if(projectile.atWall){
                 projectile = null;
             }
         }

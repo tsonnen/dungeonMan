@@ -99,7 +99,16 @@ public abstract class Unit{
         }
     }
 
+    /* Not all units will be able to block, so the 
+     * function taking 'facing' will be overridden 
+     * for units that can block projectiles */
     public void takeHit(int dmg){
+        hp -= dmg;
+        state = State.HURT;
+        stateTime = 0f;
+    }
+
+    public void takeHit(int dmg, Facing hitFacing){
         hp -= dmg;
         state = State.HURT;
         stateTime = 0f;

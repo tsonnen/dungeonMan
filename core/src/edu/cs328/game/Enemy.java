@@ -42,7 +42,7 @@ public class Enemy extends Unit{
             newDirection();
             stateTime = 0f;
         }
-        else if((position.x > x + width || position.x < x || position.y > y + height  || position.y < y) && state != State.HURT){
+        else if((position.x + this. width > x + width || position.x < x || position.y + this.height > y + height  || position.y < y) && state != State.HURT){
             movement.x *= -1;
             movement.y *= -1;
         }

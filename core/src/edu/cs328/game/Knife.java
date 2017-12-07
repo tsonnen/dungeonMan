@@ -40,18 +40,22 @@ public class Knife extends Projectile{
             case UP:
                 sprite = new Sprite(upAttack);
                 movement.set(0, speed);
+                position.y += 1;
                 break;
             case LEFT:
                 sprite = new Sprite(leftAttack);
                 movement.set(-speed, 0);
+                position.x -= 1;
                 break;
             case DOWN:
                 sprite = new Sprite(downAttack);
                 movement.set(0, -speed);
+                position.y -= 1; 
                 break;
             case RIGHT:
                 sprite = new Sprite(rightAttack);
                 movement.set(speed, 0);
+                position.x += 1;
                 break;
             default:
                 break;
