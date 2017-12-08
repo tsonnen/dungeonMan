@@ -35,6 +35,18 @@ public class Dungeon {
 
     private void makeWorld(int width, int height, int tileWidth, int tileHeight){
         TiledMapTileLayer walls = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+        TiledMapTileLayer background = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+        Texture brickTexture = new Texture(Gdx.files.internal("brick.png"));
+        Cell brickCell = new Cell();
+        brickCell.setTile(new StaticTiledMapTile(new TextureRegion(brickTexture)));
+        for(int i = 0; i < roomWidth * 20; i++){
+            for(int j = 0; j < roomHeight * 20; j++){
+                background.setCell(i,j, brickCell);
+            }
+        }
+        layers.add(background);
+        
+
         int x = 0;
         int y = 0;
         walls = makeRoom(0,0,walls);
@@ -91,7 +103,8 @@ public class Dungeon {
         Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
-        Cell current= new Cell();
+
+        Cell current = new Cell();
         boolean left, right, up, down;
         // See if there is already a wall on each side
         left    = layer.getCell(startX, startY + 1) == null;
@@ -137,6 +150,7 @@ public class Dungeon {
                 layer.setCell(startX + roomWidth/2 + i, startY + roomHeight/2 - i, cell);
             }
         }
+
         return layer;
     }
 
