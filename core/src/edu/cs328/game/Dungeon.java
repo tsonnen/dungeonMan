@@ -79,6 +79,17 @@ public class Dungeon {
         Texture wallTexture = new Texture(Gdx.files.internal("wall.png"));
         Cell cell = new Cell();
         cell.setTile(new StaticTiledMapTile(new TextureRegion(wallTexture)));
+        double seed = Math.random();
+        if(seed < .33){
+            cell.getTile().getProperties().put("type", "lancer");
+        }
+        else if(seed < .66){
+            cell.getTile().getProperties().put("type", "whelp");
+        }
+        else{
+           cell.getTile().getProperties().put("type", "kultist");
+        }
+
         boss.setVisible(false);
         boss.setCell(x + roomWidth/2, y + roomHeight/2, cell);
         boss.setName("boss");

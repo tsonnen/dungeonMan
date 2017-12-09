@@ -40,7 +40,7 @@ public class DungeonScreen implements Screen{
     private int roomWidth = 16;
     private int roomHeight = 12;
     private GameScreen gameScreen;
-    private Lancer boss;
+    private Enemy boss;
     private ShapeRenderer shapeRenderer;
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
@@ -107,6 +107,7 @@ public class DungeonScreen implements Screen{
                         }
                         enemyCell = bossLayer.getCell(i, j);
                         if(enemyCell != null){
+                            String enemyType = enemyCell.getTile().getProperties().get("type", String.class);
                             if(enemyType.equals("lancer"))
                                 boss = new Lancer(i,j);
                             else if(enemyType.equals("whelp"))
@@ -117,6 +118,7 @@ public class DungeonScreen implements Screen{
                             boss.width *= 2;
                             boss.height *= 2;
                             boss.hp += 10;
+                            this.game.music.dispose();
                             this.game.music = Gdx.audio.newMusic(Gdx.files.internal("bossBattle.ogg"));
                             this.game.music.setLooping(true);
                             this.game.music.play();
@@ -212,8 +214,17 @@ public class DungeonScreen implements Screen{
             else if(boss.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
                 player.takeHit(1);
             }
+
+            if(boss.projectile != null && player.bounds.overlaps(boss.projectile.bounds)){
+                if(boss.projectile.blockAble)
+                    player.takeHit(boss.projectile.dmg, boss.projectile.facing);
+                else
+                    player.takeHit(boss.projectile.dmg);
+                boss.projectile = null;
+            }
+
             if(boss.hp <= 0){
-                this.game.music.stop();
+                this.game.music.dispose();
                 this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
                 this.game.music.setLooping(true);
                 this.game.music.play();
@@ -221,10 +232,7 @@ public class DungeonScreen implements Screen{
                 //game.setScreen(new WinScreen(game));
             }
         }
-        else{
-            this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
-        }
-
+        
         if(player.hp <= 0){
             game.setScreen(new LoseScreen(game));
         }
