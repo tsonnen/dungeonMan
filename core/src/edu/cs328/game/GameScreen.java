@@ -44,6 +44,9 @@ public class GameScreen implements Screen{
 
     public GameScreen(final DungeonMan game) {
         this.game = game;
+        if(this.game.music != null)
+            this.game.music.dispose();
+
         map = new TiledMap();
         layers = map.getLayers();
         makeMap();
@@ -394,6 +397,9 @@ public class GameScreen implements Screen{
 
     @Override
     public void show(){
+        this.game.music = Gdx.audio.newMusic(Gdx.files.internal("overWorldMusic.mp3"));
+        this.game.music.setLooping(true);
+        this.game.music.play();
     }
 
     public void resize(int width, int height) {

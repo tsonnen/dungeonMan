@@ -19,6 +19,8 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final DungeonMan game) {
         this.game = game;
+        if(this.game.music != null)
+            this.game.music.dispose();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
     }

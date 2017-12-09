@@ -23,3 +23,6 @@ Dungeons are generated on a room-by-room basis. This meaning that once a room is
 a room will be generated on any one of four sides. If a room alrady exists at this position, 
 then this room will be altered. Within each room, there is a chance for a block pattern to be 
 placed within the room.
+
+Acknowledgements
+=========================

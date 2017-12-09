@@ -25,10 +25,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.audio.Music;
 
 public class DungeonMan extends Game {
     public ShapeRenderer shapeRenderer;
     public SpriteBatch spriteBatch;
+    public Music music;
     
     public void create () {
         spriteBatch = new SpriteBatch();
