@@ -44,6 +44,7 @@ public class DungeonScreen implements Screen{
     private Enemy boss;
     private Sound collect;
     private ShapeRenderer shapeRenderer;
+    private Exit exit;
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
         this.game = game;
@@ -237,9 +238,16 @@ public class DungeonScreen implements Screen{
                 this.game.music.dispose();
                 this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
                 this.game.music.setLooping(true);
+                exit = new Exit((int)boss.position.x, (int)boss.position.y);
                 this.game.music.play();
                 boss = null;
-                //game.setScreen(new WinScreen(game));
+            }
+        }
+
+        if(exit != null){
+            exit.render(batch, delta);
+            if(player.bounds.overlaps(exit.bounds)){
+                game.setScreen(gameScreen);
             }
         }
 
@@ -282,7 +290,18 @@ public class DungeonScreen implements Screen{
     
     @Override
     public void dispose () {
-        
+        collect.dispose();
+        dungeon.dispose();
+        for(Enemy enemy : enemies){
+            enemy.dispose();
+        }
+        map.dispose();
+        shapeRenderer.dispose();
+        if(boss != null)
+            boss.dispose();
+        if(exit != null)
+            exit.dispose();
+        player.dispose();
     }
 
     @Override

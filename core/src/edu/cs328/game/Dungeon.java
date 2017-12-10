@@ -234,4 +234,9 @@ public class Dungeon {
         }
         return count;
     }
+
+    public void dispose(){
+        map.dispose();
+        
+    }
 }

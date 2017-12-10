@@ -175,7 +175,8 @@ public class GameScreen implements Screen{
         for(Rectangle entrance : dungeonEntrances){
             if(entrance.overlaps(player.bounds)){
                 game.setScreen(new DungeonScreen(game, new Dungeon(20 * roomWidth,20 * roomHeight,16,16), this));
-                ((TiledMapTileLayer)map.getLayers().get("entrance")).setCell((int)entrance.x, (int)entrance.y, null); // Remove an entrance once it is used 
+                ((TiledMapTileLayer)map.getLayers().get("entrance")).setCell((int)entrance.x, (int)entrance.y, null); // Remove an entrance once it is used
+                dungeonEntrances.removeValue(entrance, true);
             }
         }
 
@@ -392,9 +393,13 @@ public class GameScreen implements Screen{
         layers.add(entrance);
     }
     
-    @Override
     public void dispose () {
-        
+        for(Enemy enemy : enemies){
+            enemy.dispose();
+        }
+        map.dispose();
+        player.dispose();
+        collect.dispose();
     }
 
     @Override
@@ -408,6 +413,7 @@ public class GameScreen implements Screen{
         this.game.music = Gdx.audio.newMusic(Gdx.files.internal("overWorldMusic.mp3"));
         this.game.music.setLooping(true);
         this.game.music.play();
+        Gdx.input.setInputProcessor(player);
     }
 
     public void resize(int width, int height) {

@@ -46,5 +46,6 @@ public class DungeonMan extends Game {
     public void dispose () {
         shapeRenderer.dispose();
         spriteBatch.dispose();
+        music.dispose();
     }
 }

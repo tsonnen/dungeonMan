@@ -121,4 +121,9 @@ public abstract class Unit{
         if(hitSound != null)
             hitSound.play();
     }
+
+    public void dispose(){
+        if(hitSound != null)
+            hitSound.dispose();
+    }
 }

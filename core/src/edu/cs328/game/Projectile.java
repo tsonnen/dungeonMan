@@ -71,5 +71,4 @@ public abstract class Projectile extends Unit{
             atWall = true;
         }
     }
-
 }
