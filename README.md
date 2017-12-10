@@ -26,3 +26,10 @@ placed within the room.
 
 Acknowledgements
 =========================
+**Player and Enemy Sprites** - Thank you to 'LUNARSIGNALS'. Sprites can be found [here](https://opengameart.org/content/overhead-action-rpg-characters).
+**Melee sounds** - Thank you to 'remaxim'. The sounds can be found [here](https://opengameart.org/content/3-melee-sounds).
+**Magic Sound** -  Thank you to 'spookymodem'. The sound can be found [here](https://opengameart.org/content/magic-missiles).
+**Fireball Sound** - Thank you to Julien Matthey [here](https://freesound.org/people/Julien%20Matthey/sounds/105016/).
+**Game Over Music** - Thank you to 'Aszura'. The music can be found [here](https://opengameart.org/content/game-over-8-bit-style).
+**OverWorld Theme** - Thank you to 'nene'. The music can be found[here](https://opengameart.org/content/long-away-home-8bit).
+**Menu Theme** - Thank you to 't4ngr4m'. The music can be found [here](https://opengameart.org/content/generic-8-bit-jrpg-soundtrack).
