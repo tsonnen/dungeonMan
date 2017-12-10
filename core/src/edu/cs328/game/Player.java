@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.audio.Sound;
 
 public class Player extends Unit implements InputProcessor{
     private Animation<TextureRegion> upWalk;
@@ -33,11 +34,20 @@ public class Player extends Unit implements InputProcessor{
     private int dirX, dirY  = 0;
     public int maxHp = 6;
     public int numKnife = 10;
+    private Sound deflect;
+    private Sound melee1;
+    private Sound melee2;
+    private Sound melee3;
 
     public Player(){
         speed = 2.5f;
         hp = maxHp;
         attackDmg = 6;
+        deflect = Gdx.audio.newSound(Gdx.files.internal("deflect.mp3"));
+        melee1 = Gdx.audio.newSound(Gdx.files.internal("melee1.mp3"));
+        melee2 = Gdx.audio.newSound(Gdx.files.internal("melee2.mp3"));
+        melee3 = Gdx.audio.newSound(Gdx.files.internal("melee3.mp3"));
+        hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.mp3"));
         
         spriteSheet = new Texture(Gdx.files.internal("notlink.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 16, 16);
@@ -157,21 +167,25 @@ public class Player extends Unit implements InputProcessor{
         switch(hitFacing){
             case UP:
                 if(facing == Facing.DOWN){
+                    deflect.play();
                     return;
                 }
                 break;
             case DOWN:
                 if(facing == Facing.UP){
+                    deflect.play();
                     return;
                 }
                 break;
             case LEFT:
                 if(facing == Facing.RIGHT){
+                    deflect.play();
                     return;
                 }
                 break;
             case RIGHT:
                 if(facing == Facing.LEFT){
+                    deflect.play();
                     return;
                 }
                 break;
@@ -181,6 +195,8 @@ public class Player extends Unit implements InputProcessor{
         hp -= dmg;
         state = State.HURT;
         stateTime = 0f;
+        if(hitSound != null)
+            hitSound.play();
     }
 
     private void getFacing(){
@@ -247,6 +263,7 @@ public class Player extends Unit implements InputProcessor{
 
     @Override 
     public boolean keyDown (int keycode) {
+        double seed = Math.random();
         switch(keycode){
             case Keys.W:
                 movement.y = speed;
@@ -295,11 +312,26 @@ public class Player extends Unit implements InputProcessor{
                     default:
                         break;                  
                 }
+                
+                if(seed < .33){
+                    melee1.play(1f, (float)(Math.random() * 2 + .5), -1);
+                }else if(seed < .66){
+                    melee2.play(1f, (float)(Math.random() * 2 + .5), -1);
+                }else{
+                    melee3.play(1f, (float)(Math.random() * 2 + .5), -1);
+                }
                 break;
             case Keys.K:
                 if(projectile == null && numKnife > 0){
                     projectile = new Knife(position.x + width/2, position.y + height/2, facing);
                     numKnife--;
+                    if(seed < .33){
+                        melee1.play(1f, (float)(Math.random() * 2 + .5), -1);
+                    }else if(seed < .66){
+                        melee2.play(1f, (float)(Math.random() * 2 + .5), -1);
+                    }else{
+                        melee3.play(1f, (float)(Math.random() * 2 + .5), -1);
+                    }
                 }
                 break;
             default:

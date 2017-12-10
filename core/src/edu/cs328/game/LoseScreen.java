@@ -25,6 +25,8 @@ public class LoseScreen implements Screen, InputProcessor {
 
     public LoseScreen(final DungeonMan game) {
         this.game = game;
+        if(this.game.music != null)
+            this.game.music.dispose();
         helpTexture = new Texture(Gdx.files.internal("lose.png"));
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -35,7 +37,9 @@ public class LoseScreen implements Screen, InputProcessor {
 
     @Override
     public void show(){
-    
+        this.game.music = Gdx.audio.newMusic(Gdx.files.internal("GameOver.ogg"));
+        this.game.music.setLooping(true);
+        this.game.music.play();
     }
  
     @Override

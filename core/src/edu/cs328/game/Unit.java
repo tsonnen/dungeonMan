@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 public abstract class Unit{
@@ -26,6 +27,7 @@ public abstract class Unit{
     public boolean atWall = false;
     public float stateTime = 0f;
     public int attackDmg;
+    public Sound hitSound;
 
     public enum State{
         WALKING, ATTACK, HURT
@@ -108,11 +110,15 @@ public abstract class Unit{
         hp -= dmg;
         state = State.HURT;
         stateTime = 0f;
+        if(hitSound != null)
+            hitSound.play();
     }
 
     public void takeHit(int dmg, Facing hitFacing){
         hp -= dmg;
         state = State.HURT;
         stateTime = 0f;
+        if(hitSound != null)
+            hitSound.play();
     }
 }

@@ -117,7 +117,9 @@ public class DungeonScreen implements Screen{
 
                             boss.width *= 2;
                             boss.height *= 2;
-                            boss.hp += 10;
+                            boss.hp *= 10;
+                            boss.speed *= 1.25f;
+                            boss.attackDmg *= 2;
                             this.game.music.dispose();
                             this.game.music = Gdx.audio.newMusic(Gdx.files.internal("bossBattle.ogg"));
                             this.game.music.setLooping(true);
@@ -232,7 +234,7 @@ public class DungeonScreen implements Screen{
                 //game.setScreen(new WinScreen(game));
             }
         }
-        
+
         if(player.hp <= 0){
             game.setScreen(new LoseScreen(game));
         }

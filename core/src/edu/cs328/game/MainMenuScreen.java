@@ -27,6 +27,10 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show(){
+        this.game.music = Gdx.audio.newMusic(Gdx.files.internal("mainMenuMusic.ogg"));
+        this.game.music.setLooping(true);
+        this.game.music.play();
+
         // Create a table that fills the screen. Everything else will go inside this table.
         Table table = new Table();
         table.setFillParent(true);
