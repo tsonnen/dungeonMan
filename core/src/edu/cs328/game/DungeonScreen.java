@@ -25,6 +25,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.Input.Keys;
 
 public class DungeonScreen implements Screen{
 
@@ -45,6 +48,7 @@ public class DungeonScreen implements Screen{
     private Sound collect;
     private ShapeRenderer shapeRenderer;
     private Exit exit;
+    private InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
         this.game = game;
@@ -68,6 +72,16 @@ public class DungeonScreen implements Screen{
 
     @Override
     public void render (float delta) {
+        if(game.gameState == DungeonMan.State.PLAYING){
+            playRender(delta);
+        }else{
+            pauseRender();
+        }
+        
+    }
+
+
+    private void playRender(float delta){
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
 
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
@@ -279,12 +293,32 @@ public class DungeonScreen implements Screen{
 
         shapeRenderer.setColor(0f,  0f, 1f, 1);
         float miniMapX = camera.position.x - roomWidth/2; 
-        float miniMapY = camera.position.y + roomWidth/2 - 3;
+        float miniMapY = camera.position.y + roomHeight/2 - 1;
         shapeRenderer.rect(miniMapX, miniMapY, 1, 1);
         shapeRenderer.setColor(1f, 1f, 1f, 1);
         shapeRenderer.rect((miniMapX/(roomWidth-1))/20 + miniMapX, (miniMapY/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
         shapeRenderer.setColor(1f, 0f, 0f, 1);
         shapeRenderer.rect(((dungeon.bossLoc.x - (roomWidth/2))/(roomWidth-1))/20 + miniMapX, ((dungeon.bossLoc.y - ((roomHeight -  1)/2))/(roomHeight-1))/20 + miniMapY, 1/20f, 1/20f);
+        
+        shapeRenderer.end();
+    }
+
+    private void pauseRender(){
+        System.out.println("Hello "); 
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        /* Minimap */
+        shapeRenderer.begin(ShapeType.Filled);
+
+        shapeRenderer.setColor(0f,  0f, 1f, 1);
+        float miniMapX = camera.position.x - roomWidth/2; 
+        float miniMapY = camera.position.y - roomHeight/2;
+        shapeRenderer.rect(camera.position.x - roomWidth/2, camera.position.y - roomHeight/2, roomWidth, roomHeight);
+        shapeRenderer.setColor(1f, 1f, 1f, 1);
+        shapeRenderer.rect((miniMapX/20) + miniMapX, (miniMapY/20) + miniMapY, 1, 1);
+        shapeRenderer.setColor(1f, 0f, 0f, 1);
+        shapeRenderer.rect((dungeon.bossLoc.x - roomWidth/2)/20 + miniMapX, (dungeon.bossLoc.y - roomHeight/2)/20 + miniMapY, 1, 1);
         
         shapeRenderer.end();
     }
@@ -319,7 +353,9 @@ public class DungeonScreen implements Screen{
         this.game.music.play();
         player.maxHp = player.hp = gameScreen.getPlayer().maxHp;
         player.numKnife = gameScreen.getPlayer().numKnife;
-        Gdx.input.setInputProcessor(player);
+        inputMultiplexer.addProcessor(player);
+        inputMultiplexer.addProcessor(game);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         player.hp = player.maxHp;
         player.numKnife = 10;
 

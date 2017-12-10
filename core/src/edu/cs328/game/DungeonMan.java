@@ -26,15 +26,25 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 
-public class DungeonMan extends Game {
+public class DungeonMan extends Game implements InputProcessor {
     public ShapeRenderer shapeRenderer;
     public SpriteBatch spriteBatch;
     public Music music;
+
+    public enum State{
+        PLAYING, PAUSED
+    }
+
+    State gameState = State.PLAYING;
     
     public void create () {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+
         this.setScreen(new MainMenuScreen(this));
     }
 
@@ -47,5 +57,56 @@ public class DungeonMan extends Game {
         shapeRenderer.dispose();
         spriteBatch.dispose();
         music.dispose();
+    }
+
+
+     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+        return true;
+    }
+
+    @Override
+    public boolean scrolled (int amount) {
+        return false;
+    }
+
+    @Override 
+    public boolean mouseMoved (int screenX, int screenY) {
+        return false;
+    }
+
+    @Override 
+    public boolean touchDragged (int screenX, int screenY, int pointer) {
+        return true;
+    }
+
+    @Override 
+    public boolean touchUp (int screenX, int screenY, int pointer, int button) {
+        return true;
+    }
+
+    @Override 
+    public boolean keyDown (int keycode) {
+       return false;
+    }
+    
+    @Override 
+    public boolean keyUp (int keycode) {
+        return false;
+    }
+    
+    @Override 
+    public boolean keyTyped (char character) {
+        switch(character){
+            case '\t':
+                if(gameState == State.PLAYING){
+                    gameState = State.PAUSED;
+                }else{
+                    gameState = State.PLAYING;
+                }
+                break;
+            default:
+                break;
+        }
+        return false;
     }
 }

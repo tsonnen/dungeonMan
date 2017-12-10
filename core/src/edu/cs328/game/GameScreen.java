@@ -24,6 +24,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Sound;
 
 public class GameScreen implements Screen{
@@ -44,6 +45,7 @@ public class GameScreen implements Screen{
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
     private Sound collect;
     private Vector2 spawnLoc = new Vector2();
+    private InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
     public GameScreen(final DungeonMan game) {
         this.game = game;
@@ -93,6 +95,15 @@ public class GameScreen implements Screen{
 
     @Override
     public void render (float delta) {
+        if(game.gameState == DungeonMan.State.PLAYING){
+            playRender(delta);
+        }else{
+            pauseRender();
+        }
+        
+    }
+    
+    private void playRender(float delta){
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -247,6 +258,10 @@ public class GameScreen implements Screen{
         }
 
         batch.end();
+    }
+
+    private void pauseRender(){
+
     }
 
     /* Make the map and place the trees based on the game of life */
@@ -418,7 +433,9 @@ public class GameScreen implements Screen{
         this.game.music = Gdx.audio.newMusic(Gdx.files.internal("overWorldMusic.mp3"));
         this.game.music.setLooping(true);
         this.game.music.play();
-        Gdx.input.setInputProcessor(player);
+        inputMultiplexer.addProcessor(player);
+        inputMultiplexer.addProcessor(game);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         player.hp = player.maxHp;
         player.numKnife = 10;
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
