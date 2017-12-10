@@ -22,9 +22,11 @@ public class LoseScreen implements Screen, InputProcessor {
     private Texture helpTexture;
     private SpriteBatch batch;
     private OrthographicCamera camera;
+    private Screen prevScreen;
 
-    public LoseScreen(final DungeonMan game) {
+    public LoseScreen(final DungeonMan game, Screen prevScreen) {
         this.game = game;
+        this.prevScreen = prevScreen;
         if(this.game.music != null)
             this.game.music.dispose();
         helpTexture = new Texture(Gdx.files.internal("lose.png"));
@@ -85,7 +87,7 @@ public class LoseScreen implements Screen, InputProcessor {
 
         @Override 
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        game.setScreen(new MainMenuScreen(game));
+        game.setScreen(prevScreen);
         return true;
     }
 

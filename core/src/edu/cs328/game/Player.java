@@ -108,9 +108,11 @@ public class Player extends Unit implements InputProcessor{
         }
         else if(state == State.ATTACK)
             movement.x = movement.y = 0;
-        else if(state == Unit.State.HURT && stateTime >= 1f){
-            stateTime = 0f;
-            state = State.WALKING;
+        else if(state == Unit.State.HURT){
+            if(stateTime >= .5f){
+                stateTime = 0f;
+                state = State.WALKING;
+            }
         }
 
         if(movement.x + movement.y != 0 && state != State.ATTACK){
@@ -197,6 +199,14 @@ public class Player extends Unit implements InputProcessor{
         stateTime = 0f;
         if(hitSound != null)
             hitSound.play();
+    }
+
+    public void Die(){
+        facing = Facing.UP;
+        state = State.WALKING;
+        movement.set(0,0);
+        dirX = dirY = 0;
+
     }
 
     private void getFacing(){

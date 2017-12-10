@@ -252,7 +252,8 @@ public class DungeonScreen implements Screen{
         }
 
         if(player.hp <= 0){
-            game.setScreen(new LoseScreen(game));
+            player.Die();
+            game.setScreen(new LoseScreen(game, this));
         }
 
         /* Draw hearts over everything */
@@ -312,11 +313,20 @@ public class DungeonScreen implements Screen{
 
     @Override
     public void show(){
+        this.game.music.dispose();
         this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
         this.game.music.setLooping(true);
         this.game.music.play();
         player.maxHp = player.hp = gameScreen.getPlayer().maxHp;
         player.numKnife = gameScreen.getPlayer().numKnife;
+        Gdx.input.setInputProcessor(player);
+        player.hp = player.maxHp;
+        player.numKnife = 10;
+
+        player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
+        Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
+        player.movement.set(0,0);
+        player.facing = Unit.Facing.UP;
     }
 
     public void resize(int width, int height) {

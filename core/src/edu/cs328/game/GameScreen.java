@@ -43,6 +43,7 @@ public class GameScreen implements Screen{
     private Array<Item> items = new Array<Item>();
     private Array<Rectangle> dungeonEntrances = new Array<Rectangle>();
     private Sound collect;
+    private Vector2 spawnLoc = new Vector2();
 
     public GameScreen(final DungeonMan game) {
         this.game = game;
@@ -67,6 +68,8 @@ public class GameScreen implements Screen{
             y++;
             cell = layer.getCell(x,y);
         }
+
+
 
         player.position = new Vector2(x, y);
         Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
@@ -223,7 +226,8 @@ public class GameScreen implements Screen{
         }
 
         if(player.hp <= 0){
-            game.setScreen(new LoseScreen(game));
+            player.Die();
+            game.setScreen(new LoseScreen(game, this));
         }
 
         /* Draw hearts over everything */
@@ -410,10 +414,27 @@ public class GameScreen implements Screen{
 
     @Override
     public void show(){
+        this.game.music.dispose();
         this.game.music = Gdx.audio.newMusic(Gdx.files.internal("overWorldMusic.mp3"));
         this.game.music.setLooping(true);
         this.game.music.play();
         Gdx.input.setInputProcessor(player);
+        player.hp = player.maxHp;
+        player.numKnife = 10;
+        TiledMapTileLayer layer = (TiledMapTileLayer)map.getLayers().get("walls");
+        int x = 5;
+        int y = 5;
+        Cell cell = layer.getCell(x,y);
+        while(cell != null){
+            x++;
+            y++;
+            cell = layer.getCell(x,y);
+        }
+
+        player.position = new Vector2(x, y);
+        Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
+        player.movement.set(0,0);
+        player.facing = Unit.Facing.UP;
     }
 
     public void resize(int width, int height) {
