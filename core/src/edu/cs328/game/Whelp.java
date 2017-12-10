@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.audio.Sound;
 
 public class Whelp extends Enemy{
     private Animation<TextureRegion> leftWalk;
@@ -23,6 +24,7 @@ public class Whelp extends Enemy{
     private float projectileTimer = 0f;
     private TextureRegion leftAttack;
     private TextureRegion rightAttack;
+    private Sound fireBallSound;
 
     public Whelp(int x, int y){
         position = new Vector2();
@@ -36,6 +38,8 @@ public class Whelp extends Enemy{
         attackDmg = 1;
         movement = new Vector2();
         id.set(position.x, position.y);
+
+        fireBallSound = Gdx.audio.newSound(Gdx.files.internal("fireBall.mp3"));
 
         spriteSheet = new Texture(Gdx.files.internal("whelp.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 32, 32);
@@ -110,6 +114,7 @@ public class Whelp extends Enemy{
             movement.set(0,0);
             projectileTimer = 0f;
             projectile = new FireBall(position.x + .5f, position.y + .5f, facing);
+            fireBallSound.play();
         }
         else if(projectile != null){
             projectile.update(delta, x, y, width, height);

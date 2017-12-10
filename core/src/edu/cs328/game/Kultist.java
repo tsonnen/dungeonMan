@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.audio.Sound;
 
 public class Kultist extends Enemy{
     private Animation<TextureRegion> upWalk;
@@ -23,6 +24,7 @@ public class Kultist extends Enemy{
     private Animation<TextureRegion> downWalk;
     private Texture spriteSheet;
     private float projectileTimer = 0f;
+    private Sound magicSound;
 
     public Kultist(int x, int y){
         position = new Vector2();
@@ -36,6 +38,7 @@ public class Kultist extends Enemy{
         movement = new Vector2();
         attackDmg = 2;
         id.set(position.x, position.y);
+        magicSound = Gdx.audio.newSound(Gdx.files.internal("magic.mp3"));
 
         spriteSheet = new Texture(Gdx.files.internal("kultist.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 16, 16);
@@ -103,6 +106,7 @@ public class Kultist extends Enemy{
             projectileTimer = 0f;
             projectile = new MagicBall(position.x + .5f, position.y + .5f, facing);
             stateTime = 0f;
+            magicSound.play();
         }
         else if(projectile != null){
             projectile.update(delta, x, y, width, height);

@@ -24,6 +24,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 
 public class DungeonScreen implements Screen{
 
@@ -41,6 +42,7 @@ public class DungeonScreen implements Screen{
     private int roomHeight = 12;
     private GameScreen gameScreen;
     private Enemy boss;
+    private Sound collect;
     private ShapeRenderer shapeRenderer;
 
     public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
@@ -48,6 +50,7 @@ public class DungeonScreen implements Screen{
         if(this.game.music != null)
             this.game.music.dispose();
 
+        collect = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));
         this.gameScreen = gameScreen;
 
         this.dungeon = dungeon;
@@ -146,14 +149,19 @@ public class DungeonScreen implements Screen{
         /* Draw items and entrances before (under) Player and enemies */
         for(Item item : items){
             item.render(batch);
+            boolean collected = false;
             if(player.bounds.overlaps(item.bounds)){
                 if(item instanceof Heart && player.hp < player.maxHp){
-                player.hp++;
-                items.removeValue(item, true);
+                    player.hp++;
+                    items.removeValue(item, true);
+                    collected = true;
                 }else if(item instanceof CollectableKnife){
                     player.numKnife++;
                     items.removeValue(item, true);
+                    collected = true;
                 }
+                if(collected)
+                    collect.play();
             }
         }
         
