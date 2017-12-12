@@ -33,7 +33,7 @@ public class GameScreen implements Screen{
     private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     private OrthographicCamera camera;
-    private Player player;
+    public Player player;
     private int roomWidth = 16;
     private int roomHeight = 12;
     private float stateTime = 0;
@@ -452,6 +452,11 @@ public class GameScreen implements Screen{
         Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
         player.movement.set(0,0);
         player.facing = Unit.Facing.UP;
+
+        game.dungeonsCleared++;
+        if(game.dungeonsCleared >= 5){
+            game.setScreen(new StoryScreen(game, this));
+        }
     }
 
     public void resize(int width, int height) {

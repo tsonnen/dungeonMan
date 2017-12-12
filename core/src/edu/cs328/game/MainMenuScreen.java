@@ -19,6 +19,7 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final DungeonMan game) {
         this.game = game;
+        this.game.dungeonsCleared = 0;
         if(this.game.music != null)
             this.game.music.dispose();
         stage = new Stage();

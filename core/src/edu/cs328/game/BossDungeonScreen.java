@@ -29,7 +29,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 
-public class DungeonScreen implements Screen{
+public class BossDungeonScreen implements Screen{
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
@@ -50,7 +50,7 @@ public class DungeonScreen implements Screen{
     private Exit exit;
     private InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-    public DungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
+    public BossDungeonScreen(final DungeonMan game, Dungeon dungeon, GameScreen gameScreen) {
         this.game = game;
         if(this.game.music != null)
             this.game.music.dispose();
@@ -125,25 +125,20 @@ public class DungeonScreen implements Screen{
                         }
                         enemyCell = bossLayer.getCell(i, j);
                         if(enemyCell != null){
-                            String enemyType = enemyCell.getTile().getProperties().get("type", String.class);
-                            if(enemyType.equals("lancer"))
-                                boss = new Lancer(i,j);
-                            else if(enemyType.equals("whelp"))
-                                boss = new Whelp(i,j);
-                             else if(enemyType.equals("kultist"))
-                               boss = new Kultist(i,j);
-
-                            boss.width *= 1.5;
-                            boss.height *= 1.5;
-                            boss.hp *= 10;
-                            boss.speed *= 1.25f;
-                            boss.attackDmg *= 2;
+                            boss = new Boss(i,j);
+                            
                             this.game.music.dispose();
                             this.game.music = Gdx.audio.newMusic(Gdx.files.internal("bossBattle.ogg"));
                             this.game.music.setLooping(true);
                             this.game.music.play();
                         }
                     }
+                }
+                /* Buff enemies for the BOSS DUNGEONNNNNN */
+                for(Enemy enemy : enemies){
+                    enemy.hp *= 1.5;
+                    enemy.speed *= 1.1;
+                    enemy.attackDmg *= 1.5;
                 }
 
             }
@@ -172,10 +167,6 @@ public class DungeonScreen implements Screen{
                     collected = true;
                 }else if(item instanceof CollectableKnife){
                     player.numKnife++;
-                    items.removeValue(item, true);
-                    collected = true;
-                }else if(item instanceof LifeHeart){
-                    player.maxHp++;
                     items.removeValue(item, true);
                     collected = true;
                 }
@@ -257,7 +248,6 @@ public class DungeonScreen implements Screen{
                 this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
                 this.game.music.setLooping(true);
                 exit = new Exit((int)boss.position.x, (int)boss.position.y);
-                items.add(new LifeHeart((int)camera.position.x, (int)camera.position.y));
                 this.game.music.play();
                 boss = null;
             }
@@ -266,9 +256,7 @@ public class DungeonScreen implements Screen{
         if(exit != null){
             exit.render(batch, delta);
             if(player.bounds.overlaps(exit.bounds)){
-                gameScreen.player.numKnife = player.numKnife;
-                gameScreen.player.maxHp = player.maxHp;
-                game.setScreen(gameScreen);
+                game.setScreen(new WinScreen(game));
             }
         }
 

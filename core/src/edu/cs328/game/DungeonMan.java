@@ -34,6 +34,7 @@ public class DungeonMan extends Game implements InputProcessor {
     public ShapeRenderer shapeRenderer;
     public SpriteBatch spriteBatch;
     public Music music;
+    public int dungeonsCleared = 0;
 
     public enum State{
         PLAYING, PAUSED
