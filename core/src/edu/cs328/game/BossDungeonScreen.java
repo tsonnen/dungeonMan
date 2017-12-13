@@ -35,7 +35,6 @@ public class BossDungeonScreen implements Screen{
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     private OrthographicCamera camera;
     private Dungeon dungeon;
-    private Player player;
     private Array<Enemy> enemies = new Array<Enemy>();
     private Array<Item> items = new Array<Item>();
     private Vector2 position;
@@ -62,8 +61,7 @@ public class BossDungeonScreen implements Screen{
         map = dungeon.map;
         shapeRenderer = new ShapeRenderer();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
-        player = new Player();
-        player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
+        game.player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, roomWidth, roomHeight);
         camera.update();
@@ -86,8 +84,8 @@ public class BossDungeonScreen implements Screen{
 
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        int x = (int)player.position.x / (roomWidth-1);
-        int y = (int)player.position.y / (roomHeight -1);
+        int x = (int)game.player.position.x / (roomWidth-1);
+        int y = (int)game.player.position.y / (roomHeight -1);
 
         Vector3 destPos = new Vector3(x * (roomWidth -1) + (roomWidth/2), y * (roomHeight -1) + (roomHeight/2), 0);
 
@@ -105,10 +103,16 @@ public class BossDungeonScreen implements Screen{
             * place enemies 
             */
             if(stateTime <= 0f){
+                for(Enemy enemy : enemies){
+                    enemy.dispose();
+                }
+                for(Item item : items){
+                    item.dispose();
+                }
                 TiledMapTileLayer enemyLayer = (TiledMapTileLayer)map.getLayers().get("enemies");
                 TiledMapTileLayer bossLayer = (TiledMapTileLayer)map.getLayers().get("boss");
-                enemies.clear();
-                items.clear();
+                enemies = new Array<Enemy>();
+                items = new Array<Item>();
                 for(int i = (int)destPos.x - roomWidth/2; i < (int)destPos.x + roomWidth/2; i++){
                     for(int j = (int)destPos.y - roomHeight/2; j < (int)destPos.y + roomHeight/2; j++){
                         Cell enemyCell = enemyLayer.getCell(i, j);
@@ -160,13 +164,13 @@ public class BossDungeonScreen implements Screen{
         for(Item item : items){
             item.render(batch);
             boolean collected = false;
-            if(player.bounds.overlaps(item.bounds)){
-                if(item instanceof Heart && player.hp < player.maxHp){
-                    player.hp++;
+            if(game.player.bounds.overlaps(item.bounds)){
+                if(item instanceof Heart && game.player.hp < game.player.maxHp){
+                    game.player.hp++;
                     items.removeValue(item, true);
                     collected = true;
                 }else if(item instanceof CollectableKnife){
-                    player.numKnife++;
+                    game.player.numKnife++;
                     items.removeValue(item, true);
                     collected = true;
                 }
@@ -176,34 +180,34 @@ public class BossDungeonScreen implements Screen{
         }
         
 
-        player.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
-        player.render(batch, delta, map);
+        game.player.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
+        game.player.render(batch, delta, map);
 
         /* Draw enemies 'over' player */
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(batch, delta, map);
-            if(player.projectile != null && enemy.bounds.overlaps(player.projectile.bounds)){
-                enemy.takeHit(player.projectile.dmg);
-                player.projectile = null;
+            if(game.player.projectile != null && enemy.bounds.overlaps(game.player.projectile.bounds)){
+                enemy.takeHit(game.player.projectile.dmg);
+                game.player.projectile = null;
             }
 
-            if(enemy.projectile != null && player.bounds.overlaps(enemy.projectile.bounds)){
+            if(enemy.projectile != null && game.player.bounds.overlaps(enemy.projectile.bounds)){
                 if(enemy.projectile.blockAble)
-                    player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
+                    game.player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
                 else
-                    player.takeHit(enemy.projectile.dmg);
+                    game.player.takeHit(enemy.projectile.dmg);
                 enemy.projectile = null;
             }
 
-            if(player.state == Unit.State.ATTACK){
-                if(enemy.bounds.overlaps(player.getAttackBox())){
-                    enemy.takeHit(player.attackDmg);
-                    player.stateTime = .15f;
+            if(game.player.state == Unit.State.ATTACK){
+                if(enemy.bounds.overlaps(game.player.getAttackBox())){
+                    enemy.takeHit(game.player.attackDmg);
+                    game.player.stateTime = .15f;
                 }
             }
-            else if(enemy.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                player.takeHit(enemy.attackDmg);
+            else if(enemy.bounds.overlaps(game.player.bounds) && game.player.state == Unit.State.WALKING){
+                game.player.takeHit(enemy.attackDmg);
             }
             if(enemy.hp <= 0){
                 double seed = Math.random();
@@ -221,25 +225,25 @@ public class BossDungeonScreen implements Screen{
         if(boss != null){
             boss.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             boss.render(batch, delta, map);
-            if(player.projectile != null && boss.bounds.overlaps(player.projectile.bounds)){
-                boss.takeHit(player.projectile.dmg);
-                player.projectile = null;
+            if(game.player.projectile != null && boss.bounds.overlaps(game.player.projectile.bounds)){
+                boss.takeHit(game.player.projectile.dmg);
+                game.player.projectile = null;
             }
-            if(player.state == Unit.State.ATTACK){
-                if(boss.bounds.overlaps(player.getAttackBox())){
-                    boss.takeHit(player.attackDmg);
-                    player.stateTime = .15f;
+            if(game.player.state == Unit.State.ATTACK){
+                if(boss.bounds.overlaps(game.player.getAttackBox())){
+                    boss.takeHit(game.player.attackDmg);
+                    game.player.stateTime = .15f;
                 }
             }
-            else if(boss.bounds.overlaps(player.bounds) && player.state == Unit.State.WALKING){
-                player.takeHit(1);
+            else if(boss.bounds.overlaps(game.player.bounds) && game.player.state == Unit.State.WALKING){
+                game.player.takeHit(1);
             }
 
-            if(boss.projectile != null && player.bounds.overlaps(boss.projectile.bounds)){
+            if(boss.projectile != null && game.player.bounds.overlaps(boss.projectile.bounds)){
                 if(boss.projectile.blockAble)
-                    player.takeHit(boss.projectile.dmg, boss.projectile.facing);
+                    game.player.takeHit(boss.projectile.dmg, boss.projectile.facing);
                 else
-                    player.takeHit(boss.projectile.dmg);
+                    game.player.takeHit(boss.projectile.dmg);
                 boss.projectile = null;
             }
 
@@ -255,20 +259,20 @@ public class BossDungeonScreen implements Screen{
 
         if(exit != null){
             exit.render(batch, delta);
-            if(player.bounds.overlaps(exit.bounds)){
+            if(game.player.bounds.overlaps(exit.bounds)){
                 game.setScreen(new WinScreen(game));
             }
         }
 
-        if(player.hp <= 0){
-            player.Die();
+        if(game.player.hp <= 0){
+            game.player.Die();
             game.setScreen(new LoseScreen(game, this));
         }
 
         /* Draw hearts over everything */
         Texture hearts = new Texture(Gdx.files.internal("hearts.png"));
-        for(int i = 0; i < player.maxHp; i++){
-            if(i < player.hp){
+        for(int i = 0; i < game.player.maxHp; i++){
+            if(i < game.player.hp){
                 batch.draw(new TextureRegion(hearts, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .6f, camera.position.y + ((roomHeight)/2 - .5f), .5f, .5f);
             }
             else{
@@ -277,7 +281,7 @@ public class BossDungeonScreen implements Screen{
         }
         /* Draw hearts over everything */
         Texture knife = new Texture(Gdx.files.internal("knife.png"));
-        for(int i = 0; i < player.numKnife; i++){
+        for(int i = 0; i < game.player.numKnife; i++){
             batch.draw(new TextureRegion(knife, 0, 0, 8, 8), camera.position.x + ((roomWidth)/2 - .5f) - i * .3f, camera.position.y + ((roomHeight)/2 - 1f), .5f, .5f);
         }
 
@@ -331,7 +335,7 @@ public class BossDungeonScreen implements Screen{
             boss.dispose();
         if(exit != null)
             exit.dispose();
-        player.dispose();
+        game.player.dispose();
     }
 
     @Override
@@ -346,18 +350,18 @@ public class BossDungeonScreen implements Screen{
         this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
         this.game.music.setLooping(true);
         this.game.music.play();
-        player.maxHp = player.hp = gameScreen.getPlayer().maxHp;
-        player.numKnife = gameScreen.getPlayer().numKnife;
-        inputMultiplexer.addProcessor(player);
+        game.player.maxHp = game.player.hp = gameScreen.getPlayer().maxHp;
+        game.player.numKnife = gameScreen.getPlayer().numKnife;
+        inputMultiplexer.addProcessor(game.player);
         inputMultiplexer.addProcessor(game);
         Gdx.input.setInputProcessor(inputMultiplexer);
-        player.hp = player.maxHp;
-        player.numKnife = 10;
+        game.player.hp = game.player.maxHp;
+        game.player.numKnife = 10;
 
-        player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
-        Vector3 destPos = new Vector3((int)player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
-        player.movement.set(0,0);
-        player.facing = Unit.Facing.UP;
+        game.player.position = new Vector2(dungeon.spawn.x, dungeon.spawn.y);
+        Vector3 destPos = new Vector3((int)game.player.position.x / (roomWidth - 1) * (roomWidth - 1) + (roomWidth/2), (int)game.player.position.y / (roomHeight - 1) * (roomHeight - 1) + (roomHeight/2), 0);
+        game.player.movement.set(0,0);
+        game.player.facing = Unit.Facing.UP;
     }
 
     public void resize(int width, int height) {

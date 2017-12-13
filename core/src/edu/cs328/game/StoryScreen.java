@@ -87,7 +87,7 @@ public class StoryScreen implements Screen, InputProcessor {
 
         @Override 
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        game.setScreen(new BossDungeonScreen(game, new Dungeon(20 * 16,20 * 12,16,16), (GameScreen)prevScreen));
+        game.setScreen(new BossDungeonScreen(game, new Dungeon(10 * 16,10 * 12,16,16), (GameScreen)prevScreen));
         return true;
     }
 

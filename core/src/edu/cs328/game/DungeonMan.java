@@ -29,12 +29,14 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.Graphics.DisplayMode;
 
 public class DungeonMan extends Game implements InputProcessor {
-    public ShapeRenderer shapeRenderer;
-    public SpriteBatch spriteBatch;
     public Music music;
     public int dungeonsCleared = 0;
+    public Batch batch;
+    public Player player;
 
     public enum State{
         PLAYING, PAUSED
@@ -43,9 +45,12 @@ public class DungeonMan extends Game implements InputProcessor {
     State gameState = State.PLAYING;
     
     public void create () {
-        spriteBatch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-
+        Monitor currMonitor = Gdx.graphics.getMonitor();
+        DisplayMode displayMode = Gdx.graphics.getDisplayMode(currMonitor);
+        if(!Gdx.graphics.setFullscreenMode(displayMode)) {
+            // switching to full-screen mode failed
+        }
+        player = new Player();
         this.setScreen(new MainMenuScreen(this));
     }
 
@@ -55,8 +60,6 @@ public class DungeonMan extends Game implements InputProcessor {
     
     @Override
     public void dispose () {
-        shapeRenderer.dispose();
-        spriteBatch.dispose();
         music.dispose();
     }
 

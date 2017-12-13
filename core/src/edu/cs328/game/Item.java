@@ -28,4 +28,7 @@ public abstract class Item{
     public void render(Batch batch){
         batch.draw(textureRegion, position.x, position.y, width, height);
     }
+
+    public void dispose(){
+    }
 }
