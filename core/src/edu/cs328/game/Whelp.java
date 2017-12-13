@@ -68,7 +68,7 @@ public class Whelp extends Enemy{
     public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
         projectileTimer += delta;
-        if((movement.x + movement.y == 0 || Math.random() < .01) && state != State.HURT && projectile == null){
+        if((movement.x + movement.y == 0 || Math.random() < .01) && state != State.HURT && !projectile.inAir){
             newDirection();
             stateTime = 0f;
         }

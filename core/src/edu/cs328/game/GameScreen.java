@@ -458,7 +458,7 @@ public class GameScreen implements Screen{
         game.player.movement.set(0,0);
         game.player.facing = Unit.Facing.UP;
 
-        if(game.dungeonsCleared >= 1){
+        if(game.dungeonsCleared >= 2){
             game.setScreen(new StoryScreen(game, this));
         }
     }
