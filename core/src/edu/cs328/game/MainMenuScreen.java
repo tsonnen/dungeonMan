@@ -11,11 +11,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class MainMenuScreen implements Screen {
 
     final DungeonMan game;
     private Stage stage;
+    private Texture texture;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
 
     public MainMenuScreen(final DungeonMan game) {
         this.game = game;
@@ -23,6 +29,11 @@ public class MainMenuScreen implements Screen {
         if(this.game.music != null)
             this.game.music.dispose();
         stage = new Stage();
+        texture = new Texture(Gdx.files.internal("intro.png"));
+        batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 640, 480);
+        camera.update();
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -42,7 +53,9 @@ public class MainMenuScreen implements Screen {
         //create buttons
         TextButton newGame  = new TextButton("New Game", skin);
         TextButton help     = new TextButton("Help", skin);
-        TextButton exit     = new TextButton("Exit", skin);        
+        TextButton exit     = new TextButton("Exit", skin);
+
+        newGame.setWidth(300);
         //add buttons to table
         table.add(newGame).fillX().uniformX();
         table.row().pad(10, 0, 10, 0);
@@ -79,6 +92,11 @@ public class MainMenuScreen implements Screen {
         // clear the screen ready for next set of images to be drawn
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(texture, 0,0, 640, 480);
+        batch.end();
         
         // tell our stage to do actions and draw itself
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));

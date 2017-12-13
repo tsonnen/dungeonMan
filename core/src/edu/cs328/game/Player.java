@@ -30,7 +30,7 @@ public class Player extends Unit implements InputProcessor{
     private TextureRegion rightAttack;
     private TextureRegion downAttack;
     private Texture spriteSheet;
-    public Projectile projectile;
+    public Projectile projectile = new Knife();
     private int dirX, dirY  = 0;
     public int maxHp = 6;
     public int numKnife = 10;
@@ -155,11 +155,8 @@ public class Player extends Unit implements InputProcessor{
         batch.setColor(oldColor);
         bounds = new Rectangle(position.x, position.y, width, height);
 
-        if(projectile != null){
+        if(projectile.inAir){
             projectile.render(batch, delta, map);
-            if(projectile.atWall){
-                projectile = null;
-            }
         }
     }
 
@@ -332,8 +329,9 @@ public class Player extends Unit implements InputProcessor{
                 }
                 break;
             case Keys.K:
-                if(projectile == null && numKnife > 0){
-                    projectile = new Knife(position.x + width/2, position.y + height/2, facing);
+                if(!projectile.inAir && numKnife > 0){
+                    projectile.setOrientation(position.x + width/2, position.y + height/2, facing);
+                    projectile.inAir = true;
                     numKnife--;
                     if(seed < .33){
                         melee1.play(1f, (float)(Math.random() * 2 + .5), -1);

@@ -38,6 +38,7 @@ public class Whelp extends Enemy{
         attackDmg = 1;
         movement = new Vector2();
         id.set(position.x, position.y);
+        projectile = new FireBall();
 
         fireBallSound = Gdx.audio.newSound(Gdx.files.internal("fireBall.mp3"));
 
@@ -85,7 +86,7 @@ public class Whelp extends Enemy{
         }
 
 
-        if(projectile == null){
+        if(!projectile.inAir){
             switch(facing){
                 case LEFT:
                     sprite.setRegion(leftWalk.getKeyFrame(stateTime, true));
@@ -110,13 +111,14 @@ public class Whelp extends Enemy{
             }
         }
 
-        if(projectileTimer >= 1.5f && projectile == null){
+        if(projectileTimer >= 1.5f && !projectile.inAir){
             movement.set(0,0);
             projectileTimer = 0f;
-            projectile = new FireBall(position.x + .5f, position.y + .5f, facing);
+            projectile.setOrientation(position.x + .5f, position.y + .5f, facing);
+            projectile.inAir = true;
             fireBallSound.play();
         }
-        else if(projectile != null){
+        else if(projectile.inAir){
             projectile.update(delta, x, y, width, height);
             projectileTimer = 0f;
         }
@@ -135,11 +137,8 @@ public class Whelp extends Enemy{
         bounds = new Rectangle(position.x, position.y, width, height);
 
 
-        if(projectile != null){
+        if(projectile.inAir){
             projectile.render(batch, delta, map);
-            if(projectile.atWall){
-                projectile = null;
-            }
         }
     }
 

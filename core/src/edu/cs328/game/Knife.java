@@ -22,9 +22,14 @@ public class Knife extends Projectile{
     private Texture spriteSheet;
     private float stateTime = 0f;
 
-    public Knife(float x, float y, Facing facing){
+    public Knife(){
         dmg = 3;
         speed = 5f;
+        sprite = new Sprite();
+    }
+
+    @Override
+    public void setOrientation(float x, float y, Facing facing){
         this.facing = facing;
         position.set(x,y);
 
@@ -38,22 +43,22 @@ public class Knife extends Projectile{
 
         switch(facing){
             case UP:
-                sprite = new Sprite(upAttack);
+                sprite.setRegion(upAttack);
                 movement.set(0, speed);
                 position.y += 1;
                 break;
             case LEFT:
-                sprite = new Sprite(leftAttack);
+                sprite.setRegion(leftAttack);
                 movement.set(-speed, 0);
                 position.x -= 1;
                 break;
             case DOWN:
-                sprite = new Sprite(downAttack);
+                sprite.setRegion(downAttack);
                 movement.set(0, -speed);
                 position.y -= 1; 
                 break;
             case RIGHT:
-                sprite = new Sprite(rightAttack);
+                sprite.setRegion(rightAttack);
                 movement.set(speed, 0);
                 position.x += 1;
                 break;

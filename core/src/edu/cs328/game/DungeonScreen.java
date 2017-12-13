@@ -196,17 +196,17 @@ public class DungeonScreen implements Screen{
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(game.batch, delta, map);
-            if(game.player.projectile != null && enemy.bounds.overlaps(game.player.projectile.bounds)){
+            if(game.player.projectile.inAir && enemy.bounds.overlaps(game.player.projectile.bounds)){
                 enemy.takeHit(game.player.projectile.dmg);
-                game.player.projectile = null;
+                game.player.projectile.inAir = false;
             }
 
-            if(enemy.projectile != null && game.player.bounds.overlaps(enemy.projectile.bounds)){
+            if(enemy.projectile.inAir && game.player.bounds.overlaps(enemy.projectile.bounds)){
                 if(enemy.projectile.blockAble)
                     game.player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
                 else
                     game.player.takeHit(enemy.projectile.dmg);
-                enemy.projectile = null;
+                enemy.projectile.inAir = false;
             }
 
             if(game.player.state == Unit.State.ATTACK){
@@ -228,17 +228,15 @@ public class DungeonScreen implements Screen{
                 /* Delete enemy once they are killed */
                 ((TiledMapTileLayer)map.getLayers().get("enemies")).setCell((int)enemy.id.x, (int)enemy.id.y, null);
                 enemies.removeValue(enemy, true);
-                enemy.dispose();
-                enemy = null;   
             }
         }
 
         if(boss != null){
             boss.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             boss.render(game.batch, delta, map);
-            if(game.player.projectile != null && boss.bounds.overlaps(game.player.projectile.bounds)){
+            if(game.player.projectile.inAir && boss.bounds.overlaps(game.player.projectile.bounds)){
                 boss.takeHit(game.player.projectile.dmg);
-                game.player.projectile = null;
+                game.player.projectile.inAir = false;;
             }
             if(game.player.state == Unit.State.ATTACK){
                 if(boss.bounds.overlaps(game.player.getAttackBox())){
@@ -250,11 +248,11 @@ public class DungeonScreen implements Screen{
                 game.player.takeHit(1);
             }
 
-            if(boss.projectile != null && game.player.bounds.overlaps(boss.projectile.bounds)){
+            if(boss.projectile.inAir && game.player.bounds.overlaps(boss.projectile.bounds)){
                 if(boss.projectile.blockAble)
                     game.player.takeHit(boss.projectile.dmg, boss.projectile.facing);
                 else
-                boss.projectile = null;
+                boss.projectile.inAir = false;
             }
 
             if(boss.hp <= 0){

@@ -184,20 +184,21 @@ public class BossDungeonScreen implements Screen{
         game.player.render(batch, delta, map);
 
         /* Draw enemies 'over' player */
+                /* Draw enemies 'over' player */
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
-            enemy.render(batch, delta, map);
-            if(game.player.projectile != null && enemy.bounds.overlaps(game.player.projectile.bounds)){
+            enemy.render(game.batch, delta, map);
+            if(game.player.projectile.inAir && enemy.bounds.overlaps(game.player.projectile.bounds)){
                 enemy.takeHit(game.player.projectile.dmg);
-                game.player.projectile = null;
+                game.player.projectile.inAir = false;
             }
 
-            if(enemy.projectile != null && game.player.bounds.overlaps(enemy.projectile.bounds)){
+            if(enemy.projectile.inAir && game.player.bounds.overlaps(enemy.projectile.bounds)){
                 if(enemy.projectile.blockAble)
                     game.player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
                 else
                     game.player.takeHit(enemy.projectile.dmg);
-                enemy.projectile = null;
+                enemy.projectile.inAir = false;
             }
 
             if(game.player.state == Unit.State.ATTACK){
@@ -224,10 +225,10 @@ public class BossDungeonScreen implements Screen{
 
         if(boss != null){
             boss.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
-            boss.render(batch, delta, map);
-            if(game.player.projectile != null && boss.bounds.overlaps(game.player.projectile.bounds)){
+            boss.render(game.batch, delta, map);
+            if(game.player.projectile.inAir && boss.bounds.overlaps(game.player.projectile.bounds)){
                 boss.takeHit(game.player.projectile.dmg);
-                game.player.projectile = null;
+                game.player.projectile.inAir = false;;
             }
             if(game.player.state == Unit.State.ATTACK){
                 if(boss.bounds.overlaps(game.player.getAttackBox())){
@@ -239,12 +240,21 @@ public class BossDungeonScreen implements Screen{
                 game.player.takeHit(1);
             }
 
-            if(boss.projectile != null && game.player.bounds.overlaps(boss.projectile.bounds)){
+            if(boss.projectile.inAir && game.player.bounds.overlaps(boss.projectile.bounds)){
                 if(boss.projectile.blockAble)
                     game.player.takeHit(boss.projectile.dmg, boss.projectile.facing);
                 else
-                    game.player.takeHit(boss.projectile.dmg);
-                boss.projectile = null;
+                boss.projectile.inAir = false;
+            }
+
+            if(boss.hp <= 0){
+                this.game.music.dispose();
+                this.game.music = Gdx.audio.newMusic(Gdx.files.internal("dungeonMusic.mp3"));
+                this.game.music.setLooping(true);
+                exit = new Exit((int)boss.position.x, (int)boss.position.y);
+                items.add(new LifeHeart((int)camera.position.x, (int)camera.position.y));
+                this.game.music.play();
+                boss = null;
             }
 
             if(boss.hp <= 0){

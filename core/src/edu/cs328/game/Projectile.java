@@ -18,6 +18,7 @@ public abstract class Projectile extends Unit{
     public float startX;
     public float startY;
     public boolean blockAble = true;
+    public boolean inAir = false;
 
     public Projectile(){
 
@@ -56,19 +57,40 @@ public abstract class Projectile extends Unit{
         for(Rectangle tile : rectPool){
             if(xBounds.overlaps(tile)){
                 movement.x = 0;
-                atWall = true;
+                inAir = false;
             }
             if(yBounds.overlaps(tile)){
                 movement.y = 0;
-                atWall = true;
+                inAir = false;
             }
+        }
+    }
+
+    public void setOrientation(float x, float y, Facing facing){
+        this.facing = facing;
+        width = height = 8/16f;
+
+        
+        width = height = 8/16f;
+
+        position.set(x - width/2, y - height/2);
+
+        switch(this.facing){
+            case LEFT:
+                movement.set(-1, 0);
+                break;
+            case RIGHT:
+                movement.set(1, 0);
+                break;
+            default:
+                break;
         }
     }
 
     public void update(float delta, float x, float y, float width, float height){
         stateTime += delta;
         if(position.x > x + width || position.x < x || position.y > y + height  || position.y < y){
-            atWall = true;
+            inAir = false;
         }
     }
 }

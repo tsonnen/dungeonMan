@@ -20,10 +20,10 @@ public class FireBall extends Projectile{
     private float stateTime = 0f;
     private Animation<TextureRegion> animation;
 
-    public FireBall(float x, float y, Facing facing){
-        this.facing = facing;
+    public FireBall(){
         dmg = 1;
         speed = 5f;
+        sprite = new Sprite();
 
         spriteSheet = new Texture(Gdx.files.internal("fireBall.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 8, 8);
@@ -35,23 +35,7 @@ public class FireBall extends Projectile{
 
         animation = new Animation<TextureRegion>(.15f, new Array<TextureRegion>(frames), PlayMode.LOOP);
 
-        width = height = 8/16f;
-
-        sprite = new Sprite(frames[0]);
-        width = height = 8/16f;
-
-        position.set(x - width/2, y - height/2);
-
-        switch(this.facing){
-            case LEFT:
-                movement.set(-1, 0);
-                break;
-            case RIGHT:
-                movement.set(1, 0);
-                break;
-            default:
-                break;
-        }
+        sprite.setRegion(frames[0]);
     }
 
     @Override
@@ -59,7 +43,7 @@ public class FireBall extends Projectile{
         stateTime += delta;
         sprite.setRegion(animation.getKeyFrame(stateTime, true));
         if(position.x > x + width || position.x < x || position.y > y + height  || position.y < y){
-            atWall = true;
+            inAir = false;
         }
     }
 }

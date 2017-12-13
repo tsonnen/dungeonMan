@@ -36,6 +36,7 @@ public class Kultist extends Enemy{
         hp = 3;
         speed = 1f;
         movement = new Vector2();
+        projectile  = new MagicBall();
         attackDmg = 2;
         id.set(position.x, position.y);
         magicSound = Gdx.audio.newSound(Gdx.files.internal("magic.mp3"));
@@ -101,14 +102,15 @@ public class Kultist extends Enemy{
                 break;
         }
 
-        if(projectileTimer >= 1.5f && projectile == null){
+        if(projectileTimer >= 1.5f && !projectile.inAir){
             movement.set(0,0);
             projectileTimer = 0f;
-            projectile = new MagicBall(position.x + .5f, position.y + .5f, facing);
+            projectile.setOrientation(position.x + .5f, position.y + .5f, facing);
+            projectile.inAir = true;
             stateTime = 0f;
             magicSound.play();
         }
-        else if(projectile != null){
+        else if(projectile.inAir){
             projectile.update(delta, x, y, width, height);
             projectileTimer = 0f;
         }
@@ -127,11 +129,8 @@ public class Kultist extends Enemy{
         bounds = new Rectangle(position.x, position.y, width, height);
 
 
-        if(projectile != null){
+        if(projectile.inAir){
             projectile.render(batch, delta, map);
-            if(projectile.atWall){
-                projectile = null;
-            }
         }
     }
 

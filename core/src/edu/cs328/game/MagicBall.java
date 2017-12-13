@@ -20,11 +20,13 @@ public class MagicBall extends Projectile{
     private float stateTime = 0f;
     private Animation<TextureRegion> animation;
 
-    public MagicBall(float x, float y, Facing facing){
+    public MagicBall(){
         this.facing = facing;
         dmg = 3;
         speed = 5f;
         blockAble = false;
+
+        sprite = new Sprite();
 
         spriteSheet = new Texture(Gdx.files.internal("magicBall.png"));
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 8, 8);
@@ -38,9 +40,12 @@ public class MagicBall extends Projectile{
 
         width = height = 8/16f;
 
-        sprite = new Sprite(frames[0]);
-        width = height = 8/16f;
+        sprite.setRegion(frames[0]);
 
+    }
+
+    @Override
+    public void setOrientation(float x, float y, Facing facing){
         position.set(x - width/2, y - height/2);
 
         switch(this.facing){
@@ -58,7 +63,7 @@ public class MagicBall extends Projectile{
                 break;
             default:
                 break;
-        }
+        }   
     }
 
     @Override
@@ -66,7 +71,7 @@ public class MagicBall extends Projectile{
         stateTime += delta;
         sprite.setRegion(animation.getKeyFrame(stateTime, true));
         if(position.x > x + width || position.x < x || position.y > y + height  || position.y < y){
-            atWall = true;
+            inAir = false;
         }
     }
 }

@@ -206,17 +206,17 @@ public class GameScreen implements Screen{
         for(Enemy enemy : enemies){
             enemy.update(delta, x * (roomWidth - 1), y * (roomHeight - 1), roomWidth - 1, roomHeight - 1);
             enemy.render(game.batch, delta, map);
-            if(game.player.projectile != null && enemy.bounds.overlaps(game.player.projectile.bounds)){
+            if(game.player.projectile.inAir && enemy.bounds.overlaps(game.player.projectile.bounds)){
                 enemy.takeHit(game.player.projectile.dmg);
-                game.player.projectile = null;
+                game.player.projectile.inAir = false;
             }
 
-            if(enemy.projectile != null && game.player.bounds.overlaps(enemy.projectile.bounds)){
+            if(enemy.projectile.inAir && game.player.bounds.overlaps(enemy.projectile.bounds)){
                 if(enemy.projectile.blockAble)
                     game.player.takeHit(enemy.projectile.dmg, enemy.projectile.facing);
                 else
                     game.player.takeHit(enemy.projectile.dmg);
-                enemy.projectile = null;
+                enemy.projectile.inAir = false;
             }
 
             if(game.player.state == Unit.State.ATTACK){
